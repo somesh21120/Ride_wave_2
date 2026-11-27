@@ -1,0 +1,3 @@
+{
+  "ignore": [".localdb/**", ".cache/**", "logs/**", "tests/**", "ml/pairing-model.json"]
+}

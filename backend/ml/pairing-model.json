@@ -1,0 +1,326 @@
+{
+  "type": "logistic-regression",
+  "features": [
+    "pickupOffKm",
+    "dropOffKm",
+    "overlapRatio",
+    "detourKm",
+    "savingPct",
+    "waitMin",
+    "directKm"
+  ],
+  "mean": [
+    0.6186161550921073,
+    0.5848666370471327,
+    0.9114771720041774,
+    1.6502219023451505,
+    34.646921965880935,
+    0.5883034444310802,
+    6.374589168908646
+  ],
+  "std": [
+    0.4054038163243474,
+    0.38909630617876617,
+    0.10214813911531233,
+    0.6230030999645303,
+    8.518130907265808,
+    0.5106256520246285,
+    3.0855268737807835
+  ],
+  "weights": [
+    -0.16380030183366043,
+    -0.1533148977986142,
+    0.18723477520049675,
+    -0.5310682262428836,
+    0.7086347763432993,
+    -0.15295308230455015,
+    -0.01847405403631953
+  ],
+  "bias": 0.5435318471440928,
+  "version": 1,
+  "createdAt": "2026-11-23T08:14:18.080Z",
+  "trainedOn": "simulated data (scripts/train-pairing-model.js)",
+  "dataset": {
+    "rows": 15895,
+    "train": 12716,
+    "test": 3179
+  },
+  "metrics": {
+    "train": {
+      "n": 12716,
+      "accuracy": 0.7260144699591067,
+      "auc": 0.7815150192253191,
+      "logLoss": 0.5450745423922213,
+      "baseRate": 0.6041994337842088
+    },
+    "test": {
+      "n": 3179,
+      "accuracy": 0.7212960050330293,
+      "auc": 0.7807161914505102,
+      "logLoss": 0.5435505685317213,
+      "baseRate": 0.6080528468071721
+    }
+  },
+  "importance": [
+    {
+      "feature": "savingPct",
+      "weight": 0.7086
+    },
+    {
+      "feature": "detourKm",
+      "weight": -0.5311
+    },
+    {
+      "feature": "overlapRatio",
+      "weight": 0.1872
+    },
+    {
+      "feature": "pickupOffKm",
+      "weight": -0.1638
+    },
+    {
+      "feature": "dropOffKm",
+      "weight": -0.1533
+    },
+    {
+      "feature": "waitMin",
+      "weight": -0.153
+    },
+    {
+      "feature": "directKm",
+      "weight": -0.0185
+    }
+  ],
+  "corridors": [
+    {
+      "id": 3,
+      "from": {
+        "lat": 22.304369694908896,
+        "lng": 70.7728560990998
+      },
+      "to": {
+        "lat": 22.304388594783774,
+        "lng": 70.79934793789252
+      },
+      "trips": 415,
+      "share": 0.17291666666666666,
+      "fromName": "Raiya Road",
+      "toName": "Race Course / offices"
+    },
+    {
+      "id": 2,
+      "from": {
+        "lat": 22.28443672537001,
+        "lng": 70.77953047344204
+      },
+      "to": {
+        "lat": 22.27001260328956,
+        "lng": 70.84017827151149
+      },
+      "trips": 414,
+      "share": 0.1725,
+      "fromName": "University Road",
+      "toName": "Aji GIDC"
+    },
+    {
+      "id": 1,
+      "from": {
+        "lat": 22.274396258388926,
+        "lng": 70.77162802905012
+      },
+      "to": {
+        "lat": 22.36920338572009,
+        "lng": 70.79809064794019
+      },
+      "trips": 354,
+      "share": 0.1475,
+      "fromName": "Kalawad Road",
+      "toName": "Marwadi University"
+    },
+    {
+      "id": 0,
+      "from": {
+        "lat": 22.3054829928809,
+        "lng": 70.77530365874533
+      },
+      "to": {
+        "lat": 22.36865045884909,
+        "lng": 70.79816653004389
+      },
+      "trips": 293,
+      "share": 0.12208333333333334,
+      "fromName": "Raiya Road",
+      "toName": "Marwadi University"
+    },
+    {
+      "id": 7,
+      "from": {
+        "lat": 22.272072176972035,
+        "lng": 70.78015595415131
+      },
+      "to": {
+        "lat": 22.30438264353063,
+        "lng": 70.79947955957853
+      },
+      "trips": 260,
+      "share": 0.10833333333333334,
+      "fromName": "Nana Mava",
+      "toName": "Race Course / offices"
+    },
+    {
+      "id": 5,
+      "from": {
+        "lat": 22.276867864995136,
+        "lng": 70.76332165990151
+      },
+      "to": {
+        "lat": 22.30359700809281,
+        "lng": 70.7995836964564
+      },
+      "trips": 253,
+      "share": 0.10541666666666667,
+      "fromName": "Kalawad Road",
+      "toName": "Race Course / offices"
+    },
+    {
+      "id": 4,
+      "from": {
+        "lat": 22.268294570302857,
+        "lng": 70.80945745200114
+      },
+      "to": {
+        "lat": 22.30362513043165,
+        "lng": 70.79912617059301
+      },
+      "trips": 248,
+      "share": 0.10333333333333333,
+      "fromName": "Bhaktinagar",
+      "toName": "Race Course / offices"
+    },
+    {
+      "id": 6,
+      "from": {
+        "lat": 22.269762094601035,
+        "lng": 70.80915395670552
+      },
+      "to": {
+        "lat": 22.369279140578687,
+        "lng": 70.79805603803382
+      },
+      "trips": 163,
+      "share": 0.06791666666666667,
+      "fromName": "Bhaktinagar",
+      "toName": "Marwadi University"
+    }
+  ],
+  "pooling": [
+    {
+      "perHour": 60,
+      "proximity": {
+        "offeredPct": 10.999999999999998,
+        "pooledPct": 5.333333333333334,
+        "acceptanceRate": 62.5,
+        "vehicleKmSavedPct": 1.7994687407150411,
+        "avgSavingPct": 29.4,
+        "avgDetourKm": 1.4981017880360956
+      },
+      "corridor": {
+        "offeredPct": 15.666666666666668,
+        "pooledPct": 11.166666666666668,
+        "acceptanceRate": 71.71428571428571,
+        "vehicleKmSavedPct": 4.461916873766397,
+        "avgSavingPct": 39.71886033562579,
+        "avgDetourKm": 1.44814554197454
+      },
+      "smart": {
+        "offeredPct": 14.333333333333332,
+        "pooledPct": 10.833333333333334,
+        "acceptanceRate": 75.66666666666666,
+        "vehicleKmSavedPct": 4.33678734975633,
+        "avgSavingPct": 39.99207954365794,
+        "avgDetourKm": 1.4280958692252912
+      }
+    },
+    {
+      "perHour": 120,
+      "proximity": {
+        "offeredPct": 16.916666666666664,
+        "pooledPct": 8.916666666666668,
+        "acceptanceRate": 53.449938949938954,
+        "vehicleKmSavedPct": 3.5237128863727647,
+        "avgSavingPct": 30.8625,
+        "avgDetourKm": 1.6126416420250513
+      },
+      "corridor": {
+        "offeredPct": 25.25,
+        "pooledPct": 14.25,
+        "acceptanceRate": 55.82259648563996,
+        "vehicleKmSavedPct": 6.134861089089527,
+        "avgSavingPct": 39.52827561949025,
+        "avgDetourKm": 1.382631871088812
+      },
+      "smart": {
+        "offeredPct": 22.58333333333333,
+        "pooledPct": 14.416666666666668,
+        "acceptanceRate": 63.82335646809331,
+        "vehicleKmSavedPct": 6.351400871504054,
+        "avgSavingPct": 39.95415918148592,
+        "avgDetourKm": 1.3271740057938344
+      }
+    },
+    {
+      "perHour": 240,
+      "proximity": {
+        "offeredPct": 33.41666666666667,
+        "pooledPct": 17.666666666666664,
+        "acceptanceRate": 53.01474471507206,
+        "vehicleKmSavedPct": 7.310692061546308,
+        "avgSavingPct": 33.12801656654782,
+        "avgDetourKm": 1.5873024529161364
+      },
+      "corridor": {
+        "offeredPct": 38.91666666666667,
+        "pooledPct": 25.541666666666668,
+        "acceptanceRate": 63.85614541324803,
+        "vehicleKmSavedPct": 11.542909745887636,
+        "avgSavingPct": 40.87177425325232,
+        "avgDetourKm": 1.344024241295657
+      },
+      "smart": {
+        "offeredPct": 35.791666666666664,
+        "pooledPct": 25.250000000000007,
+        "acceptanceRate": 69.6348960388417,
+        "vehicleKmSavedPct": 11.488181088854535,
+        "avgSavingPct": 41.525516090349505,
+        "avgDetourKm": 1.2847525602458973
+      }
+    },
+    {
+      "perHour": 480,
+      "proximity": {
+        "offeredPct": 49.02083333333333,
+        "pooledPct": 29.104166666666664,
+        "acceptanceRate": 58.34759067562286,
+        "vehicleKmSavedPct": 12.147594236533264,
+        "avgSavingPct": 34.593032275999555,
+        "avgDetourKm": 1.6271629100503102
+      },
+      "corridor": {
+        "offeredPct": 52.3125,
+        "pooledPct": 34.333333333333336,
+        "acceptanceRate": 64.4984937054505,
+        "vehicleKmSavedPct": 16.031656846324726,
+        "avgSavingPct": 42.475711252566896,
+        "avgDetourKm": 1.3063995350526616
+      },
+      "smart": {
+        "offeredPct": 48.875,
+        "pooledPct": 35.49999999999999,
+        "acceptanceRate": 70.75563394565515,
+        "vehicleKmSavedPct": 16.272756279550197,
+        "avgSavingPct": 42.58510339999139,
+        "avgDetourKm": 1.198255355932539
+      }
+    }
+  ]
+}

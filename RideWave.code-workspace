@@ -1,0 +1,114 @@
+{
+  "folders": [
+    {
+      "name": "RideWave 2.0",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/graphify-out": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/package-lock.json": true,
+      "docs/sem7-notes": true
+    },
+    "eslint.workingDirectories": [
+      "frontend"
+    ],
+    "editor.tabSize": 2,
+    "files.insertFinalNewline": true
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Backend: dev server",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": {
+          "cwd": "${workspaceFolder}/backend"
+        },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Frontend: dev server",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": {
+          "cwd": "${workspaceFolder}/frontend"
+        },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Run both servers",
+        "dependsOn": [
+          "Backend: dev server",
+          "Frontend: dev server"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": "Backend: tests",
+        "type": "shell",
+        "command": "npm test",
+        "options": {
+          "cwd": "${workspaceFolder}/backend"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Frontend: lint",
+        "type": "shell",
+        "command": "npm run lint",
+        "options": {
+          "cwd": "${workspaceFolder}/frontend"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Frontend: build",
+        "type": "shell",
+        "command": "npm run build",
+        "options": {
+          "cwd": "${workspaceFolder}/frontend"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Check everything (tests + lint + build)",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+          "Backend: tests",
+          "Frontend: lint",
+          "Frontend: build"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": "Seed admin + demo users",
+        "type": "shell",
+        "command": "node seedAdmin.js && node seedTestUsers.js",
+        "options": {
+          "cwd": "${workspaceFolder}/backend"
+        },
+        "problemMatcher": []
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "saoudrizwan.claude-dev",
+      "dbaeumer.vscode-eslint",
+      "bradlc.vscode-tailwindcss",
+      "mongodb.mongodb-vscode"
+    ]
+  }
+}
