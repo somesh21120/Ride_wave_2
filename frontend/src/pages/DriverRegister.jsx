@@ -5,6 +5,7 @@ import { registerUser, clearError, sendOtp } from "../redux/authSlice";
 import { Mail, Lock, User, Phone, ArrowRight, Car, Upload, ShieldCheck } from "lucide-react";
 import { useToast } from "../context/ToastContext";
 import AuthLayout from "../components/auth/AuthLayout";
+import PhoneInput from "../components/ui/PhoneInput";
 
 const DriverRegister = () => {
   const dispatch = useDispatch();
@@ -78,7 +79,7 @@ const DriverRegister = () => {
         <div>
           <label className="rw-label">Phone Number</label>
           <div style={{ position: "relative" }}>
-            <input type="tel" placeholder="+91 99999 99999" className="rw-input" style={{ paddingLeft: "40px" }} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
+            <PhoneInput placeholder="99999 99999" className="rw-input" style={{ paddingLeft: "40px" }} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
             <Phone size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
           </div>
         </div>

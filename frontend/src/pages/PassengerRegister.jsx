@@ -5,6 +5,7 @@ import { registerUser, clearError, sendOtp } from "../redux/authSlice";
 import { Mail, Lock, User, Phone, ArrowRight, ShieldCheck } from "lucide-react";
 import { useToast } from "../context/ToastContext";
 import AuthLayout from "../components/auth/AuthLayout";
+import PhoneInput from "../components/ui/PhoneInput";
 
 const PassengerRegister = () => {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const PassengerRegister = () => {
     { label: "Full Name", key: "name", type: "text", placeholder: "John Doe", Icon: User },
     { label: "Email Address", key: "email", type: "email", placeholder: "you@example.com", Icon: Mail },
     { label: "Password", key: "password", type: "password", placeholder: "Min. 6 characters", Icon: Lock },
-    { label: "Phone Number", key: "phone", type: "tel", placeholder: "+91 99999 99999", Icon: Phone },
+    { label: "Phone Number", key: "phone", type: "tel", placeholder: "99999 99999", Icon: Phone },
   ];
 
   return (
@@ -50,7 +51,11 @@ const PassengerRegister = () => {
           <div key={key}>
             <label className="rw-label">{label}</label>
             <div style={{ position: "relative" }}>
-              <input type={type} placeholder={placeholder} className="rw-input" style={{ paddingLeft: "40px" }} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} required />
+              {key === "phone" ? (
+                <PhoneInput placeholder={placeholder} className="rw-input" style={{ paddingLeft: "40px" }} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
+              ) : (
+                <input type={type} placeholder={placeholder} className="rw-input" style={{ paddingLeft: "40px" }} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} required />
+              )}
               <Icon size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
             </div>
           </div>

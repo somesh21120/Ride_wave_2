@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { registerUser, clearError } from "../redux/authSlice";
 import { Mail, Lock, User, Phone, ArrowRight } from "lucide-react";
 import { useToast } from "../context/ToastContext";
+import PhoneInput from "../components/ui/PhoneInput";
 const FIELD_ICONS = { name: User, email: Mail, password: Lock, phone: Phone };
 const Register = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ const Register = () => {
     { label: "Full Name", key: "name", type: "text", placeholder: "John Doe" },
     { label: "Email Address", key: "email", type: "email", placeholder: "you@example.com" },
     { label: "Password", key: "password", type: "password", placeholder: "Min. 6 characters" },
-    { label: "Phone Number", key: "phone", type: "tel", placeholder: "+91 99999 99999" },
+    { label: "Phone Number", key: "phone", type: "tel", placeholder: "99999 99999" },
   ];
   return (
     <div style={{ minHeight: "calc(100vh - 64px)", display: "flex" }}>
@@ -47,7 +48,11 @@ const Register = () => {
                 <div key={key}>
                   <label className="rw-label">{label}</label>
                   <div style={{ position: "relative" }}>
-                    <input type={type} placeholder={placeholder} className="rw-input" style={{ paddingLeft: "40px" }} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} required />
+                    {key === "phone" ? (
+                      <PhoneInput placeholder={placeholder} className="rw-input" style={{ paddingLeft: "40px" }} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
+                    ) : (
+                      <input type={type} placeholder={placeholder} className="rw-input" style={{ paddingLeft: "40px" }} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} required />
+                    )}
                     <Icon size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
                   </div>
                 </div>

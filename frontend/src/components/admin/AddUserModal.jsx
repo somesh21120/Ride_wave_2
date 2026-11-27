@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import api from "../../services/api";
+import PhoneInput from "../ui/PhoneInput";
 
 /**
  * Admin: create a driver, passenger or admin account directly (no OTP).
@@ -51,7 +52,7 @@ const AddUserModal = ({ onClose, onCreated }) => {
           </div>
           <div><label className="rw-label">Full name</label><input className="rw-input" required value={form.name} onChange={set("name")} /></div>
           <div><label className="rw-label">Email</label><input type="email" className="rw-input" required value={form.email} onChange={set("email")} /></div>
-          <div><label className="rw-label">Phone</label><input type="tel" className="rw-input" required value={form.phone} onChange={set("phone")} /></div>
+          <div><label className="rw-label">Phone</label><PhoneInput className="rw-input" required value={form.phone} onChange={set("phone")} /></div>
           <div><label className="rw-label">Temporary password (min 6 characters)</label><input type="text" className="rw-input" required minLength={6} value={form.password} onChange={set("password")} /></div>
 
           {form.role === "driver" && (

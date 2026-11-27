@@ -5,6 +5,7 @@ import { User, Mail, Phone, Shield, Car, Bike, Edit2, Save, X, LogOut } from "lu
 import { logout } from "../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import PhoneInput from "../components/ui/PhoneInput";
 import SavedPlacesManager from "../components/places/SavedPlacesManager";
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -68,7 +69,7 @@ const Profile = () => {
               <div style={{ background: "var(--bg-secondary)", borderRadius: "8px", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Phone size={16} color="var(--text-secondary)" /></div>
               <div style={{ flex: 1 }}>
                 <p style={{ color: "var(--text-muted)", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>Phone Number</p>
-                {editing ? (<input className="rw-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} style={{ fontSize: "0.875rem", padding: "8px 12px" }} />) : (<p style={{ color: "var(--text-primary)", fontWeight: 500, fontSize: "0.9rem" }}>{user?.phone || "Not set"}</p>)}
+                {editing ? (<PhoneInput className="rw-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} style={{ fontSize: "0.875rem", padding: "8px 12px" }} />) : (<p style={{ color: "var(--text-primary)", fontWeight: 500, fontSize: "0.9rem" }}>{user?.phone || "Not set"}</p>)}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
