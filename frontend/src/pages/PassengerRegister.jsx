@@ -25,7 +25,8 @@ const PassengerRegister = () => {
     try {
       const res = await sendOtp(form.email);
       setOtpSent(true);
-      toast(`OTP sent to ${form.email} (demo OTP: ${res.otp})`, "info");
+        setForm(f => ({ ...f, otp: res.otp }));
+        toast("OTP auto-filled. Tap Create Account.", "info");
     } catch (e) { toast(e?.response?.data?.message || "Could not send OTP", "error"); }
     setSendingOtp(false);
   };

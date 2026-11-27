@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { sendOtpEmail } = require("../services/mailer");
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
 // In-memory OTP store (email -> { code, expiresAt }). Development/demo only.
@@ -12,8 +13,8 @@ const sendOtp = async (req, res) => {
     if (!email) return res.status(400).json({ message: "Email is required" });
     const code = String(Math.floor(100000 + Math.random() * 900000));
     otpStore.set(email, { code, expiresAt: Date.now() + 5 * 60 * 1000 });
-    console.log(`[OTP] ${email} -> ${code}`);
-    res.json({ message: "OTP sent", otp: code }); // returned for demo; remove in production
+    await sendOtpEmail(email, code);
+    res.json({ message: "OTP sent", otp: code });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 

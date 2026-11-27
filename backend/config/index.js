@@ -20,6 +20,11 @@ const config = {
     keyId: process.env.RAZORPAY_KEY_ID,
     keySecret: process.env.RAZORPAY_KEY_SECRET,
   },
+  // SMTP for sending OTP emails. Leave empty to print OTP to console (demo mode).
+  smtpHost: process.env.SMTP_HOST || "smtp.gmail.com",
+  smtpPort: process.env.SMTP_PORT || "587",
+  smtpUser: process.env.SMTP_USER || "",
+  smtpPass: process.env.SMTP_PASS || "",
 };
 
 // Pool matcher used by the live app: "proximity" (Sem 7 rule) or "corridor" (Sem 8, v2)
