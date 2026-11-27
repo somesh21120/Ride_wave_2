@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useToast } from "../context/ToastContext";
-import { User, Mail, Phone, Shield, Car, Bike, Edit2, Save, X, LogOut } from "lucide-react";
+import { User, Mail, Phone, Shield, Car, Bike, Edit2, Save, X, LogOut, Trash2 } from "lucide-react";
 import { logout } from "../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -28,6 +28,18 @@ const Profile = () => {
     setSaving(false);
   };
   const handleLogout = () => { dispatch(logout()); navigate("/login"); };
+  const [deleting, setDeleting] = useState(false);
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure? This permanently deletes your account, rides, and all data. This cannot be undone.")) return;
+    setDeleting(true);
+    try {
+      await api.delete("/auth/profile");
+      dispatch(logout());
+      toast("Account deleted permanently.", "info");
+      navigate("/");
+    } catch (e) { toast(e?.response?.data?.message || "Could not delete account", "error"); }
+    setDeleting(false);
+  };
   const memberSince = user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "";
   return (
     <div style={{ minHeight: "100%", background: "var(--bg-secondary)" }}>
@@ -149,6 +161,7 @@ const Profile = () => {
             <div><p style={{ fontWeight: 500, fontSize: "0.875rem", color: "var(--text-primary)" }}>Member since</p><p style={{ color: "var(--text-secondary)", fontSize: "0.8rem" }}>{memberSince}</p></div>
           </div>
           <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "#FEF2F2", border: "1px solid #FCA5A5", color: "#DC2626", borderRadius: "8px", padding: "10px 16px", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem", fontFamily: "var(--font-sans)", width: "100%" }}><LogOut size={15} /> Sign out of your account</button>
+          <button onClick={handleDeleteAccount} disabled={deleting} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "none", border: "1px solid var(--border)", color: "var(--danger, #DC2626)", borderRadius: "8px", padding: "10px 16px", cursor: "pointer", fontWeight: 600, fontSize: "0.85rem", fontFamily: "var(--font-sans)", width: "100%", marginTop: "8px", opacity: deleting ? 0.6 : 1 }}><Trash2 size={15} /> {deleting ? "Deleting..." : "Delete account permanently"}</button>
         </div>
       </div>
     </div>

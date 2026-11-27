@@ -154,4 +154,12 @@ const deleteSavedPlace = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, sendOtp, getSavedPlaces, addSavedPlace, updateSavedPlace, deleteSavedPlace };
+const deleteOwnAccount = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.user.id);
+    if (!user) return res.status(404).json({ message: "Account not found" });
+    res.json({ message: "Account deleted permanently" });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, sendOtp, getSavedPlaces, addSavedPlace, updateSavedPlace, deleteSavedPlace, deleteOwnAccount };
