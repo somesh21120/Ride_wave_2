@@ -19,7 +19,6 @@ import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
-import MlLab from "./pages/MlLab";
 import TripShare from "./pages/TripShare";
 import TopProgress from "./components/ui/TopProgress";
 import Navbar from "./components/Navbar";
@@ -82,8 +81,6 @@ function AppRoutes() {
         <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
         <Route path="/faq" element={<PublicLayout><FAQ /></PublicLayout>} />
         <Route path="/trip/:token" element={<TripShare />} />
-        <Route path="/lab" element={<Navigate to="/admin/ml-lab" replace />} />
-        <Route path="/admin/ml-lab" element={<AdminRoute><MlLab /></AdminRoute>} />
         <Route path="/terms" element={<PublicLayout><Terms /></PublicLayout>} />
         <Route path="/privacy" element={<PublicLayout><Privacy /></PublicLayout>} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

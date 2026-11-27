@@ -6,12 +6,11 @@ import PageHeader from "../components/PageHeader";
 import { useToast } from "../context/ToastContext";
 import {
   Users, Car, Repeat, IndianRupee, CheckCircle2, Clock, RefreshCw, ShieldCheck,
-  Search, Trash2, UserCheck, UserX, MapPin, Navigation, Star, Edit2, X, UserPlus, Activity, PiggyBank, FlaskConical,
+  Search, Trash2, UserCheck, UserX, MapPin, Navigation, Star, Edit2, X, UserPlus, Activity, PiggyBank,
 } from "lucide-react";
 import { SkeletonCard, SkeletonRow } from "../components/Skeleton";
 import AddUserModal from "../components/admin/AddUserModal";
 import RideDetailDrawer from "../components/admin/RideDetailDrawer";
-import AnalyticsCharts from "../components/admin/AnalyticsCharts";
 import SafetyAlerts from "../components/admin/SafetyAlerts";
 import CountUp from "../components/ui/CountUp";
 import EmptyState from "../components/ui/EmptyState";
@@ -23,7 +22,6 @@ const TABS = [
   { id: "rides", label: "Rides", Icon: Car },
   { id: "recurring", label: "Daily Rides", Icon: Repeat },
   { id: "reviews", label: "Reviews", Icon: Star },
-  { id: "ml-lab", label: "ML Lab", Icon: FlaskConical, external: "/admin/ml-lab" },
 ];
 
 const STATUS_STYLES = {
@@ -188,7 +186,6 @@ const AdminDashboard = () => {
               <StatCard icon={Users} label="Pooled Rides" value={stats.counts.pooledRides ?? "-"} color="#0EA5E9" />
               <StatCard icon={Trash2} label="Cancelled" value={stats.counts.cancelledRides ?? "-"} color="#DC2626" />
             </div>
-            <AnalyticsCharts />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "14px", marginBottom: "28px" }}>
               <StatCard icon={Clock} label="Pending Requests" value={stats.counts.requestedRides} color="#EF4444" />
               <StatCard icon={Repeat} label="Daily Rides" value={stats.counts.recurringRides} color="#8B5CF6" />
