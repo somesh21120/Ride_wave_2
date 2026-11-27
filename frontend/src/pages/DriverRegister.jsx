@@ -34,7 +34,7 @@ const DriverRegister = () => {
     try {
       const res = await sendOtp(form.email);
       setOtpSent(true);
-      toast(`OTP sent to ${form.email} (demo OTP: ${res.otp})`, "info");
+            toast("OTP sent to your email.", "info");
     } catch (e) { toast(e?.response?.data?.message || "Could not send OTP", "error"); }
     setSendingOtp(false);
   };
