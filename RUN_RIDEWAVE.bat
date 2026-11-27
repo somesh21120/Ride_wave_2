@@ -1,5 +1,5 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 title RideWave
 cd /d "%~dp0"
 
@@ -97,6 +97,43 @@ echo ============================================
 echo.
 start "" http://127.0.0.1:5173
 echo This window can be closed. The servers run in minimised windows on the taskbar.
-echo To stop, run this file again or close those windows.
+echo.
+echo ---- Phone demo ----
+for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notmatch '^(127|169\.254)' -and $_.PrefixOrigin -ne 'WellKnown' } | ForEach-Object { $_.IPAddress }"`) do set "LAN_IP=%%i"
+if defined LAN_IP echo On the SAME Wi-Fi, phones open: http://%LAN_IP%:5173
+echo.
+echo Need a link that works on ANY network (hotspot, mobile data)?
+set "PUB=n"
+set /p PUB=Create a public https link with Cloudflare? (y/n, default n): 
+if /i not "!PUB!"=="y" goto :no_tunnel
+
+set "CF="
+where cloudflared >nul 2>&1 && set "CF=cloudflared"
+if not defined CF if exist "%ProgramFiles%\cloudflared\cloudflared.exe" set "CF=%ProgramFiles%\cloudflared\cloudflared.exe"
+if not defined CF if exist "%ProgramFiles(x86)%\cloudflared\cloudflared.exe" set "CF=%ProgramFiles(x86)%\cloudflared\cloudflared.exe"
+if defined CF goto :start_tunnel
+echo cloudflared not found. Install it? (requires admin, one time only)
+set "INST=n"
+set /p INST=Install now? (y/n): 
+if /i not "!INST!"=="y" goto :no_tunnel
+winget install --id Cloudflare.cloudflared -e --accept-source-agreements --accept-package-agreements >nul 2>&1
+if exist "%ProgramFiles%\cloudflared\cloudflared.exe" set "CF=%ProgramFiles%\cloudflared\cloudflared.exe"
+if not defined CF if exist "%ProgramFiles(x86)%\cloudflared\cloudflared.exe" set "CF=%ProgramFiles(x86)%\cloudflared\cloudflared.exe"
+if not defined CF (
+  echo Could not find cloudflared after install. Restart RUN_RIDEWAVE and try again.
+  goto :no_tunnel
+)
+
+:start_tunnel
+taskkill /FI "WINDOWTITLE eq RideWave Tunnel*" /T /F >nul 2>&1
+start "RideWave Tunnel" cmd /k ""%CF%" tunnel --url http://127.0.0.1:5173"
+echo.
+echo A window "RideWave Tunnel" opened. In about 10 seconds it shows:
+echo   https://random-words.trycloudflare.com
+echo Open that link on any phone. Works on Wi-Fi, hotspot, mobile data.
+echo The link changes every time and works only while this window is open.
+echo.
+:no_tunnel
+echo To stop, close the server windows on the taskbar.
 echo.
 pause
