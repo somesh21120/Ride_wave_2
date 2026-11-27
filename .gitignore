@@ -155,7 +155,7 @@ backend/.cache/
 # Private Node.js copy downloaded by RUN_RIDEWAVE.bat (scripts/get-node.ps1)
 .runtime/
 
-# AI / agent / tooling files (review cleanup)
+# Tooling / workspace files
 AGENTS.md
 CLAUDE.md
 .clineignore

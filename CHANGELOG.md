@@ -83,7 +83,7 @@ Sem 8 changes are grouped three ways:
 - **Hosting readiness:** `/api/health` with version and build, central JSON error handler, `CLIENT_URL` CORS, env-based API and socket URLs, `vercel.json`, MongoDB indexes.
 
 ### Engineering
-- Unit tests (state machine, fares); API smoke test; local git history with run tags and backups; documentation (architecture, API, development guide, deployment guide, feature registry, agent rules and task queue).
+- Unit tests (state machine, fares); API smoke test; local git history with run tags and backups; documentation (architecture, API, development guide, deployment guide, feature registry, task queue).
 - Some React lint rules relaxed to warnings for untouched Sem 7 code (`frontend/eslint.config.js`).
 
 ## [1.x] Sem 7 baseline (August 2026, team 7P_077)

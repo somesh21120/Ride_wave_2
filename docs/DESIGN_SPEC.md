@@ -1,6 +1,6 @@
 # RideWave 2.0 Design Spec ("Wave" theme)
 
-Every UI task in `docs/AGENT_QUEUE.md` follows this file. It replaces the Sem 7 look (amber + slate + Inter). The goal for Review 1 is that **a reviewer who saw Sem 7 recognises at a glance that the product was redesigned**: new colours, new type, new layouts.
+This file replaces the Sem 7 look (amber + slate + Inter). The goal for Review 1 is that **a reviewer who saw Sem 7 recognises at a glance that the product was redesigned**: new colours, new type, new layouts.
 
 Mood: calm, premium, trustworthy ("quiet luxury" for daily commuting). Ivory and ink with a deep teal brand. Few colours, generous spacing, large type, soft shadows. No gradients except the one named below. No emoji in UI text.
 

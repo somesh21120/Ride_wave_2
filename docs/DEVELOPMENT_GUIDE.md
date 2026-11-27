@@ -1,6 +1,6 @@
 # RideWave Development Guide
 
-How we work on RideWave so three people (and AI coding agents) can add features quickly without breaking each other's work.
+How we work on RideWave so the team can add features quickly without breaking each other's work.
 
 ## 1. Run it locally (Windows, Command Prompt)
 
@@ -91,17 +91,7 @@ Backend log: (copy from the terminal running npm run dev)
 ```
 The ErrorBoundary screen also shows the error message; copy that too.
 
-## 6. Working with an AI coding agent
-
-- Start every prompt with: project path, "Command Prompt (cmd) only", "read AGENTS.md first".
-- One feature per prompt. Name the exact files to touch and the acceptance checks.
-- Ask for a read-only audit first when something "should already work".
-- After the agent finishes: run the definition of done yourself. A passing build is not proof.
-- Commit after every working feature so a bad prompt can be rolled back with `git restore`.
-- Agent rules live in `AGENTS.md` (read automatically via `.clinerules` / `CLAUDE.md`); the task list is `docs/AGENT_QUEUE.md`. Send: "Do the next unchecked task in docs/AGENT_QUEUE.md."
-- `.clineignore` keeps the agent away from `node_modules`, builds, images and `.env` to save credit.
-
-## 7. Versioning
+## 6. Versioning
 
 Semantic versioning, kept in `VERSION` (root and `ridewave-app/`) and both `package.json` files.
 `2.0.0-alpha.N` up to Review 1, `2.0.0-beta.N` for Review 2, `2.0.0-rc.N` before Review 3, `2.0.0` final.

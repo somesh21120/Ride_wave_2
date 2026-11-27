@@ -1,6 +1,6 @@
 # RideWave Architecture
 
-How the system is put together, so anyone on the team (or an AI coding agent) can add a feature without breaking another. Keep this file updated whenever you add a model, route, socket event or service.
+How the system is put together, so anyone on the team can add a feature without breaking another. Keep this file updated whenever you add a model, route, socket event or service.
 
 Version covered: 2.0.0-dev (Sem 8, Major Project-II)
 

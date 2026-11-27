@@ -105,7 +105,6 @@
   },
   "extensions": {
     "recommendations": [
-      "saoudrizwan.claude-dev",
       "dbaeumer.vscode-eslint",
       "bradlc.vscode-tailwindcss",
       "mongodb.mongodb-vscode"

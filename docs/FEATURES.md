@@ -75,7 +75,7 @@ Status: ✅ done and verified in browser · 🟡 done in code, needs browser che
 | CORS limited to CLIENT_URL | 🟡 | config/index.js | S | v2 |
 | Crash screen instead of blank page | 🟡 | components/ErrorBoundary | I | v2 |
 | Unit tests (state machine, fares) | ✅ | backend/tests | Sa | v2 |
-| AI agent workspace (AGENTS.md, task queue, .clineignore, VS Code tasks) | ✅ | AGENTS.md, docs/AGENT_QUEUE.md, .vscode/ | S | v2 |
+| VS Code tasks for dev, test, lint, build | ✅ | .vscode/ | S | v2 |
 | Staging deployment | ⏳ | docs/DEPLOYMENT.md | S | |
 | Design system + redesigned screens (C1 to C3), mobile layout (D1 to D3) | 🟡 | frontend/src/index.css, frontend/tailwind.config.js, frontend/src/styles/README.md | I | v2 |
 | Landing page redesign (C2) | 🟡 | frontend/src/pages/Landing.jsx | I | v2 |
