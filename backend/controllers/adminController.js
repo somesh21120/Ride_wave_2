@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Ride = require("../models/Ride");
 const RecurringRide = require("../models/RecurringRide");
+const MatchLog = require("../models/MatchLog");
 const { notifyRide } = require("../services/realtime");
 const { fillDays } = require("../utils/analytics");
 
@@ -292,6 +293,21 @@ const getAnalytics = async (req, res) => {
   }
 };
 
+// ---- Corridor match logs (real-time data collection for the matching algorithm) ----
+const getMatchLogs = async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 200);
+    const logs = await MatchLog.find()
+      .populate("ride", "pickupLocation dropoffLocation rideType fare")
+      .populate("candidate", "pickupLocation dropoffLocation rideType fare")
+      .sort({ createdAt: -1 })
+      .limit(limit);
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getRideDetail,
@@ -304,4 +320,5 @@ module.exports = {
   deleteRide,
   getRecurringRides,
   getAnalytics,
+  getMatchLogs,
 };

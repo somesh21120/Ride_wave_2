@@ -44,12 +44,16 @@ npm run dev                    # http://127.0.0.1:5173
 ```
 
 ## Demo accounts (after seeding)
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@ridewave.app | Admin@123 |
-| Driver | driver@test.com | drive123 |
-| Passenger | passenger@test.com | pass123 |
-| Passenger 2 | passenger2@test.com | pass456 |
+| Role | Email | Password | Vehicle |
+|---|---|---|---|
+| Admin | admin@ridewave.app | Admin@123 | — |
+| Passenger | passenger@test.com | pass123 | — |
+| Passenger 2 | passenger2@test.com | pass456 | — |
+| Passenger 3 | passenger3@test.com | pass789 | — |
+| Passenger 4 | passenger4@test.com | pass000 | — |
+| Driver (Car) | driver@test.com | drive123 | Maruti Swift, GJ 03 AB 1234 |
+| Driver (Auto) | driver-auto@test.com | drive123 | Bajaj RE, GJ 03 CD 5678 |
+| Driver (Bike) | driver-bike@test.com | drive123 | Honda Activa, GJ 03 EF 9012 |
 
 ## Razorpay test payments
 - Card (success): `5267 3181 8797 5449`, any future expiry, any CVV, OTP `1234` if asked

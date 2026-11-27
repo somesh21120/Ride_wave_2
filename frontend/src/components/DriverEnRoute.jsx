@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
-import { MapPin, Navigation, Phone, User, Car, Clock, Ban, Share2, ShieldAlert } from "lucide-react";
+import { MapPin, Navigation, Phone, User, Car, Clock, Ban, Share2, ShieldAlert, Users } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import { useToast } from "../context/ToastContext";
@@ -58,6 +58,7 @@ const DriverEnRoute = ({ ride, role, onStartRide, onCancel, actionLoading }) => 
   const watchIdRef = useRef(null);
   const [otpInput, setOtpInput] = useState("");
   const [showSos, setShowSos] = useState(false);
+  const [coOtpInputs, setCoOtpInputs] = useState({});
 
   const driverLoc = ride?.driver?._id ? driverLocations[ride.driver._id] : null;
   const isDriver = role === "driver";
@@ -79,7 +80,7 @@ const DriverEnRoute = ({ ride, role, onStartRide, onCancel, actionLoading }) => 
   }, [isDriver, ride?._id, ride?.status]);
 
   // ETA label & center target
-  const etaLabel = ride.status === "ongoing" ? "min to destination" : "min to pickup";
+  const etaLabel = ride.status === "ongoing" ? (isDriver ? "min to destination" : "min to destination") : (isDriver ? "min to first pickup" : "min to pickup");
   const mapTarget = ride.status === "ongoing" ? ride.dropoffLocation : ride.pickupLocation;
   // Driver's vehicle (populated by the API) for the passenger's "Driver on the way" card.
   // v1 referenced an undefined variable here, which crashed My Rides once a driver accepted.
@@ -118,6 +119,24 @@ const DriverEnRoute = ({ ride, role, onStartRide, onCancel, actionLoading }) => 
           {ride.pickupLocation && <Marker position={[ride.pickupLocation.lat, ride.pickupLocation.lng]} icon={pickupIcon} />}
           {ride.dropoffLocation && <Marker position={[ride.dropoffLocation.lat, ride.dropoffLocation.lng]} icon={dropoffIcon} />}
           {driverLoc && <Marker position={[driverLoc.lat, driverLoc.lng]} icon={driverIcon} />}
+          {/* Route line from driver to destination */}
+          {driverLoc && ride.status === "ongoing" && ride.dropoffLocation && (
+            <Polyline positions={[[driverLoc.lat, driverLoc.lng], [ride.dropoffLocation.lat, ride.dropoffLocation.lng]]} color="var(--brand)" weight={3} opacity={0.6} dashArray="8, 8" />
+          )}
+          {/* Route line from pickup to dropoff */}
+          {ride.pickupLocation && ride.dropoffLocation && (
+            <Polyline positions={[[ride.pickupLocation.lat, ride.pickupLocation.lng], [ride.dropoffLocation.lat, ride.dropoffLocation.lng]]} color="#B08D57" weight={2} opacity={0.4} />
+          )}
+          {/* Co-rider pickup markers */}
+          {(ride.coRiders || []).filter(c => c.status === "joined" || c.status === "picked_up").map((co, i) => {
+            if (!co.pickupLocation) return null;
+            const coIcon = new L.DivIcon({
+              className: "",
+              html: `<div style="width:14px;height:14px;border-radius:50%;background:${co.status === "picked_up" ? "#10B981" : "#F59E0B"};border:2px solid #fff;box-shadow:0 0 0 2px ${co.status === "picked_up" ? "#10B981" : "#F59E0B"};display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;">${i + 1}</div>`,
+              iconSize: [14, 14], iconAnchor: [7, 7],
+            });
+            return <Marker key={co.user?._id || i} position={[co.pickupLocation.lat, co.pickupLocation.lng]} icon={coIcon} />;
+          })}
         </MapContainer>
         {/* Status overlay */}
         <div style={{ position: "absolute", top: "12px", left: "12px", background: "var(--bg-card)", borderRadius: "20px", padding: "6px 14px", display: "flex", alignItems: "center", gap: "6px", boxShadow: "0 2px 8px rgba(0,0,0,0.15)", fontSize: "0.78rem", fontWeight: 600, color: "var(--text-secondary)", zIndex: 1000 }}>
@@ -205,6 +224,53 @@ const DriverEnRoute = ({ ride, role, onStartRide, onCancel, actionLoading }) => 
               onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, "").slice(0, 4))}
               style={{ letterSpacing: "0.3em", fontWeight: 700, fontSize: "1.1rem", textAlign: "center" }}
             />
+          </div>
+        )}
+
+        {/* Co-rider pickup (multi-stop corridor pool) — visible to driver during ongoing ride */}
+        {isDriver && ride.status === "ongoing" && (ride.coRiders || []).filter(c => c.status === "joined").length > 0 && (
+          <div style={{ marginBottom: "14px", borderTop: "1px solid var(--border)", paddingTop: "14px" }}>
+            <p style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--text-primary)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <Users size={15} color="var(--brand)" /> Co-riders to pick up
+            </p>
+            {(ride.coRiders || []).filter(c => c.status === "joined").map((co, i) => {
+              const coId = co.user?._id || co.user;
+              const val = coOtpInputs[coId] || "";
+              return (
+                <div key={coId} style={{ background: "var(--bg-secondary)", borderRadius: "8px", padding: "10px 12px", marginBottom: "8px" }}>
+                  <p style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 600, marginBottom: "4px" }}>
+                    Co-rider {i + 1}: {co.pickupLocation?.address?.split(",")[0] || "Unknown"}
+                  </p>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <input
+                      className="rw-input"
+                      inputMode="numeric"
+                      maxLength={4}
+                      placeholder="Their 4-digit code"
+                      value={val}
+                      onChange={(e) => setCoOtpInputs({ ...coOtpInputs, [coId]: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                      style={{ letterSpacing: "0.3em", fontWeight: 700, fontSize: "0.95rem", textAlign: "center", flex: 1 }}
+                    />
+                    <button
+                      className="rw-btn-primary"
+                      onClick={async () => {
+                        try {
+                          await api.put(`/rides/${ride._id}/pickup-corider`, { coRiderUserId: coId, otp: val });
+                          toast("Co-rider picked up!", "success");
+                          setCoOtpInputs({ ...coOtpInputs, [coId]: "" });
+                        } catch (e) {
+                          toast(e?.response?.data?.message || "Incorrect code", "error");
+                        }
+                      }}
+                      disabled={val.length !== 4}
+                      style={{ height: "44px", whiteSpace: "nowrap", fontSize: "0.78rem", padding: "0 14px" }}
+                    >
+                      Pick up
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 

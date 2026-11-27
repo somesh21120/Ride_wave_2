@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const Ride = require("../models/Ride");
 const { notifyRide } = require("./realtime");
 const config = require("../config");
@@ -172,14 +173,17 @@ const closeCorridorPool = async (res, docsById, rideType, matcher = "corridor") 
   spine.poolMatchedRide = spine._id;
   spine.poolMaxPassengers = size;
   spine.rideCategory = "pool";
-  spine.poolMatcher = matcher; // "smart" = corridor pool ranked by the AI model
+  spine.poolMatcher = matcher;
   spine.poolMatchNote = `Your route is the main route; ${size - 1} rider(s) join along the way, saves ₹${sf.saving}`;
   spine.coRiders = [];
+
+  const newStartOtp = () => String(crypto.randomInt(1000, 10000));
 
   for (let k = 0; k < memberDocs.length; k++) {
     const m = memberDocs[k];
     const ev = res.members[k];
     const f = fareById[String(m._id)];
+    const coOtp = newStartOtp();
     spine.coRiders.push({
       user: m.passenger,
       pickupLocation: m.pickupLocation,
@@ -187,6 +191,7 @@ const closeCorridorPool = async (res, docsById, rideType, matcher = "corridor") 
       fare: f.fare,
       sharedKm: Number(ev.sharedKm.toFixed(2)),
       detourKm: Number(ev.detourKm.toFixed(2)),
+      otp: coOtp,
     });
     m.fare = f.fare;
     m.poolSavings = f.saving;

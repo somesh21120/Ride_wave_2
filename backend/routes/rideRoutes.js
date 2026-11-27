@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { bookRide, getMyRides, getRideById, cancelRide, getAvailableRides, acceptRide, rejectRide, startRide, completeRide, getOpenPools, joinPool, leavePool, getDriverRides, getPoolMatchStatus, shareRide, sosRide } = require("../controllers/rideController");
+const { bookRide, getMyRides, getRideById, cancelRide, getAvailableRides, acceptRide, rejectRide, startRide, completeRide, getOpenPools, joinPool, leavePool, getDriverRides, getPoolMatchStatus, skipPool, pickupCoRider, shareRide, sosRide } = require("../controllers/rideController");
 const { protect } = require("../middleware/authMiddleware");
 router.post("/book", protect, bookRide);
 router.get("/my-rides", protect, getMyRides);
@@ -14,6 +14,8 @@ router.put("/:id/accept", protect, acceptRide);
 router.put("/:id/reject", protect, rejectRide);
 router.put("/:id/start", protect, startRide);
 router.put("/:id/complete", protect, completeRide);
+router.put("/:id/skip-pool", protect, skipPool);
+router.put("/:id/pickup-corider", protect, pickupCoRider);
 router.post("/:id/join", protect, joinPool);
 router.post("/:id/leave", protect, leavePool);
 router.post("/:id/share", protect, shareRide);

@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader";
 import { useToast } from "../context/ToastContext";
 import {
   Users, Car, Repeat, IndianRupee, CheckCircle2, Clock, RefreshCw, ShieldCheck,
-  Search, Trash2, UserCheck, UserX, MapPin, Navigation, Star, Edit2, X, UserPlus, Activity, PiggyBank,
+  Search, Trash2, UserCheck, UserX, MapPin, Navigation, Star, Edit2, X, UserPlus, Activity, PiggyBank, Route,
 } from "lucide-react";
 import { SkeletonCard, SkeletonRow } from "../components/Skeleton";
 import AddUserModal from "../components/admin/AddUserModal";
@@ -22,6 +22,7 @@ const TABS = [
   { id: "rides", label: "Rides", Icon: Car },
   { id: "recurring", label: "Daily Rides", Icon: Repeat },
   { id: "reviews", label: "Reviews", Icon: Star },
+  { id: "corridor", label: "Corridor Matching", Icon: Route },
 ];
 
 const STATUS_STYLES = {
@@ -52,6 +53,8 @@ const AdminDashboard = () => {
   const [rides, setRides] = useState([]);
   const [recurring, setRecurring] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [matchLogs, setMatchLogs] = useState([]);
+  const [matchLogsLoading, setMatchLogsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [editUser, setEditUser] = useState(null); // user being edited in modal
@@ -99,6 +102,13 @@ const AdminDashboard = () => {
     setLoading(false);
   }, [toast]);
 
+  const loadMatchLogs = useCallback(async () => {
+    setMatchLogsLoading(true);
+    try { const { data } = await api.get("/admin/match-logs", { params: { limit: 100 } }); setMatchLogs(data); }
+    catch (e) { toast(e?.response?.data?.message || "Could not load match logs", "error"); }
+    setMatchLogsLoading(false);
+  }, [toast]);
+
   const handleDeleteReview = async (id) => {
     if (!window.confirm("Delete this review?")) return;
     try { await api.delete(`/reviews/${id}`); toast("Review deleted", "success"); loadReviews(); }
@@ -111,7 +121,15 @@ const AdminDashboard = () => {
     if (tab === "rides") loadRides();
     if (tab === "recurring") loadRecurring();
     if (tab === "reviews") loadReviews();
-  }, [tab, loadOverview, loadUsers, loadRides, loadRecurring, loadReviews]);
+    if (tab === "corridor") loadMatchLogs();
+  }, [tab, loadOverview, loadUsers, loadRides, loadRecurring, loadReviews, loadMatchLogs]);
+
+  // Auto-refresh match logs every 10 seconds when the corridor tab is active
+  useEffect(() => {
+    if (tab !== "corridor") return;
+    const id = setInterval(loadMatchLogs, 10000);
+    return () => clearInterval(id);
+  }, [tab, loadMatchLogs]);
 
   const handleUpdateUser = async (id, changes) => {
     try { await api.put(`/admin/users/${id}`, changes); toast("User updated", "success"); loadUsers(); }
@@ -156,7 +174,7 @@ const AdminDashboard = () => {
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <PageHeader compact eyebrow="Admin" title="Admin Panel" subtitle="Manage users, rides, and monitor platform activity" maxWidth="1100px"
-        actions={<div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}><button className="rw-btn-secondary" onClick={() => { if (tab === "overview") loadOverview(); if (tab === "users") loadUsers(); if (tab === "rides") loadRides(); if (tab === "recurring") loadRecurring(); if (tab === "reviews") loadReviews(); }} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem" }}><RefreshCw size={14} /> Refresh</button></div>} />
+        actions={<div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}><button className="rw-btn-secondary" onClick={() => { if (tab === "overview") loadOverview(); if (tab === "users") loadUsers(); if (tab === "rides") loadRides(); if (tab === "recurring") loadRecurring(); if (tab === "reviews") loadReviews(); if (tab === "corridor") loadMatchLogs(); }} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem" }}><RefreshCw size={14} /> Refresh</button></div>} />
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px" }}>
         <div className="rw-admin-tabs" role="tablist" style={{ marginBottom: "24px" }}>
           {TABS.map(({ id, label, Icon, external }) => (
@@ -352,6 +370,85 @@ const AdminDashboard = () => {
               ))}
             </div>
           )
+        )}
+
+        {tab === "corridor" && (
+          <>
+            <div className="rw-card" style={{ padding: "24px", marginBottom: "20px" }}>
+              <h2 style={{ fontWeight: 700, fontSize: "1.1rem", color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <Route size={20} color="var(--brand)" /> How corridor matching works
+              </h2>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.6 }}>
+                When a passenger books a ride and opts for pooling, their trip route becomes a <strong>corridor</strong>. 
+                Other riders going the same way within the next 2 minutes are evaluated against this corridor:
+              </p>
+              <ol style={{ color: "var(--text-secondary)", fontSize: "0.88rem", lineHeight: 2, marginTop: "10px", paddingLeft: "20px" }}>
+                <li><strong>Project onto route</strong> — each rider's pickup and drop-off are projected onto the lead's route.</li>
+                <li><strong>Direction check</strong> — pickup must come before drop-off along the route (same direction).</li>
+                <li><strong>Off-route limit</strong> — both stops must be within 1.5 km of the route.</li>
+                <li><strong>Overlap threshold</strong> — at least 60% of the rider's trip must be shared.</li>
+                <li><strong>Fair fare split</strong> — every km is shared by riders in the vehicle on that km; each rider saves at least 10%.</li>
+              </ol>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", marginTop: "8px" }}>
+                Every matching decision is logged below in real time. Over time, this data helps improve the matching algorithm.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
+              <h2 style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Match Log {matchLogs.length > 0 && <span style={{ color: "var(--text-muted)", fontWeight: 400, textTransform: "none" }}>({matchLogs.length} entries)</span>}
+              </h2>
+              <span style={{ color: "var(--text-muted)", fontSize: "0.78rem" }}>Auto-refreshes every 10s</span>
+            </div>
+
+            {matchLogsLoading ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {[1,2,3].map(i => <SkeletonCard key={i} lines={2} height="80px" />)}
+              </div>
+            ) : matchLogs.length === 0 ? (
+              <div className="rw-card"><EmptyState illustration={AllClear} width={110} title="No match data yet" text="Corridor matching logs appear here in real time when passengers book pool rides and the corridor matcher evaluates them." /></div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {matchLogs.map((log) => {
+                  const rideAddr = log.ride?.pickupLocation?.address || log.ride?._id;
+                  const candAddr = log.candidate?.pickupLocation?.address || log.candidate?._id;
+                  const t = new Date(log.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                  return (
+                    <div key={log._id} className="rw-card" style={{ padding: "14px 16px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "4px" }}>
+                            <span className="rw-badge" style={{ background: log.chosen ? "#D1FAE5" : log.eligible ? "#FEF3C7" : "#FEE2E2", color: log.chosen ? "#059669" : log.eligible ? "#D97706" : "#DC2626", fontSize: "0.7rem", fontWeight: 700 }}>
+                              {log.chosen ? "✓ MATCHED" : log.eligible ? "ELIGIBLE" : "REJECTED"}
+                            </span>
+                            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>{log.matcher}</span>
+                            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{t}</span>
+                          </div>
+                          <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+                            <strong>Spine:</strong> {rideAddr} <span style={{ color: "var(--text-muted)" }}>→</span> {log.ride?.dropoffLocation?.address || ""}
+                          </p>
+                          <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+                            <strong>Candidate:</strong> {candAddr} <span style={{ color: "var(--text-muted)" }}>→</span> {log.candidate?.dropoffLocation?.address || ""}
+                          </p>
+                        </div>
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <p style={{ fontSize: "0.8rem", color: "var(--text-primary)", fontWeight: 600 }}>₹{log.candidate?.fare || "?"}</p>
+                          {log.features && (
+                            <p style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                              {log.features.sharedKm != null ? `${log.features.sharedKm.toFixed(1)} km shared` : ""}
+                              {log.features.detourKm != null ? ` · ${log.features.detourKm.toFixed(1)} km detour` : ""}
+                              {log.features.savingPct != null ? ` · save ${log.features.savingPct.toFixed(0)}%` : ""}
+                            </p>
+                          )}
+                          {log.reason && <p style={{ fontSize: "0.72rem", color: "#DC2626" }}>{log.reason}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
 
         {detailRideId && (

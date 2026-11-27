@@ -202,13 +202,13 @@ const BookingSheet = ({
               display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px 12px",
               borderRadius: "10px", cursor: "pointer", fontFamily: "var(--font-sans)", textAlign: "left",
               minHeight: "44px",
-              background: instantPool ? "#F0FDF4" : "var(--bg-secondary)",
-              border: instantPool ? "2px solid #22C55E" : "2px solid transparent",
+              background: instantPool ? "var(--brand-light)" : "var(--bg-secondary)",
+              border: instantPool ? "2px solid var(--brand)" : "2px solid transparent",
               color: "var(--text-primary)", transition: "all 0.15s",
             }}>
               <div style={{
                 width: "20px", height: "20px", borderRadius: "4px", flexShrink: 0,
-                background: instantPool ? "#22C55E" : "var(--border)",
+                background: instantPool ? "var(--brand)" : "var(--border)",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 {instantPool && <CheckCircle size={16} color="white" />}
@@ -249,9 +249,9 @@ const BookingSheet = ({
         {/* Fare summary */}
         {fare > 0 && (
           <div style={{
-            background: instantPool ? "#F0FDF4" : "var(--brand-light)",
+            background: instantPool ? "var(--brand-light)" : "var(--brand-light)",
             borderRadius: "10px", padding: "12px 14px",
-            borderLeft: instantPool ? "4px solid #22C55E" : "4px solid var(--brand)",
+            borderLeft: instantPool ? "4px solid var(--brand)" : "4px solid var(--brand)",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
               <span style={{ color: "var(--text-secondary)", fontSize: "0.8rem" }}>Distance</span>
@@ -262,7 +262,7 @@ const BookingSheet = ({
                 {instantPool ? "Pool Fare (if matched)" : "Estimated Fare"}
               </span>
               <div style={{ textAlign: "right" }}>
-                <span style={{ color: instantPool ? "#16A34A" : "var(--brand-dark)", fontWeight: 800, fontSize: "1.1rem" }}>
+                <span style={{ color: instantPool ? "var(--brand-dark)" : "var(--brand-dark)", fontWeight: 800, fontSize: "1.1rem" }}>
                   ₹{instantPool ? poolFare : fare}
                 </span>
                 {instantPool && (

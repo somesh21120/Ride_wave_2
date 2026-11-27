@@ -29,16 +29,20 @@ If Windows asks about the firewall for Node.js, click **Allow** (Private network
 ## Demo accounts
 All of these exist automatically on a fresh copy.
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@ridewave.app | Admin@123 |
-| Driver | driver@test.com | drive123 |
-| Passenger | passenger@test.com | pass123 |
-| Passenger 2 | passenger2@test.com | pass456 |
+| Role | Email | Password | Vehicle |
+|---|---|---|---|
+| Admin | admin@ridewave.app | Admin@123 | — |
+| Passenger | passenger@test.com | pass123 | — |
+| Passenger 2 | passenger2@test.com | pass456 | — |
+| Passenger 3 | passenger3@test.com | pass789 | — |
+| Passenger 4 | passenger4@test.com | pass000 | — |
+| Driver (Car) | driver@test.com | drive123 | Maruti Swift, GJ 03 AB 1234 |
+| Driver (Auto) | driver-auto@test.com | drive123 | Bajaj RE, GJ 03 CD 5678 |
+| Driver (Bike) | driver-bike@test.com | drive123 | Honda Activa, GJ 03 EF 9012 |
 
-Any login page works for every account; each one opens its own screen.
-
-The driver account has a car: Maruti Swift, GJ 03 AB 1234, 5 seats.
+The car driver account has a Maruti Swift, GJ 03 AB 1234, 5 seats.
+The auto driver account has a Bajaj RE, GJ 03 CD 5678, 4 seats.
+The bike driver account has a Honda Activa, GJ 03 EF 9012, 2 seats.
 
 ### Trying a full ride
 1. Open two browser windows (one normal, one Incognito/InPrivate).

@@ -7,7 +7,9 @@ const coRiderSchema = new mongoose.Schema({
   fare: { type: Number, required: true },
   sharedKm: { type: Number, default: null },  // v2: km shared with the main route
   detourKm: { type: Number, default: null },  // v2: extra km driven for this rider
-  status: { type: String, enum: ["joined", "cancelled"], default: "joined" },
+  status: { type: String, enum: ["joined", "picked_up", "cancelled"], default: "joined" },
+  otp: { type: String, default: null, select: false },
+  pickedUpAt: { type: Date, default: null },
   joinedAt: { type: Date, default: Date.now },
 }, { _id: false });
 

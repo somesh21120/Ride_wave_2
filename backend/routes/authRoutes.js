@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser, getUserProfile, updateUserProfile, sendOtp, getSavedPlaces, addSavedPlace, updateSavedPlace, deleteSavedPlace, deleteOwnAccount } = require("../controllers/authController");
+const { registerUser, loginUser, adminLogin, getUserProfile, updateUserProfile, sendOtp, getSavedPlaces, addSavedPlace, updateSavedPlace, deleteSavedPlace, deleteOwnAccount } = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/admin-login", adminLogin);
 router.post("/send-otp", sendOtp);
 router.get("/profile", protect, getUserProfile);
 router.put("/profile", protect, updateUserProfile);

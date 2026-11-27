@@ -13,6 +13,7 @@ const {
   deleteRide,
   getRecurringRides,
   getAnalytics,
+  getMatchLogs,
 } = require("../controllers/adminController");
 
 router.use(protect, admin);
@@ -28,5 +29,6 @@ router.get("/rides/:id", getRideDetail);
 router.put("/rides/:id", updateRideStatus);
 router.delete("/rides/:id", deleteRide);
 router.get("/recurring", getRecurringRides);
+router.get("/match-logs", getMatchLogs);
 
 module.exports = router;

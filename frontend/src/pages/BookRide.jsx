@@ -9,7 +9,7 @@ import SearchingDriver from "../components/SearchingDriver";
 import BookingSheet from "../components/booking/BookingSheet";
 import SavedPlaceChips from "../components/places/SavedPlaceChips";
 import { useToast } from "../context/ToastContext";
-import { Bike, Car, CheckCircle, CreditCard, Banknote, Navigation, MapPin, Users, Clock, Zap, User } from "lucide-react";
+import { Bike, Car, CheckCircle, CreditCard, Banknote, Navigation, MapPin, Users, Clock, Zap, User, XCircle } from "lucide-react";
 import api from "../services/api";
 import { getRoute } from "../services/geocode";
 const MAX_RIDE_DIST = 50; // max km allowed
@@ -43,21 +43,18 @@ const BookRide = () => {
   const [matchStatus, setMatchStatus] = useState(null); // polling state
   const [matchedRide, setMatchedRide] = useState(null);
   const [pollComplete, setPollComplete] = useState(false);
+  const [poolRideId, setPoolRideId] = useState(null);
+  const [poolCancelling, setPoolCancelling] = useState(false);
+  const [poolSkipping, setPoolSkipping] = useState(false);
   const pollRef = useRef(null);
   const selected = RIDE_TYPES.find(r => r.type === rideType);
   const distance = pickup && dropoff ? getDistance(pickup, dropoff) : 0;
   const fare = distance ? Math.round(selected.base + selected.per * distance) : 0;
   const poolFare = distance && instantPool ? Math.round((selected.base + selected.per * distance) * 0.7) : 0;
 
-  // Request location permission and auto-detect pickup on page load
+  // Auto-detect current location for pickup on page load
   useEffect(() => {
     if (!navigator.geolocation) return;
-    navigator.permissions?.query({ name: "geolocation" }).then((result) => {
-      if (result.state === "prompt") {
-        // Browser will ask on the first getCurrentPosition call
-      }
-    }).catch(() => {});
-    // Auto-detect current location for pickup
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
@@ -158,6 +155,7 @@ const BookRide = () => {
               }));
               if (result.meta.requestStatus === "fulfilled") {
                 if (instantPool) {
+                  setPoolRideId(result.payload._id);
                   startPolling(result.payload._id);
                   toast("Payment successful! Searching for a pool match...", "info");
                 } else {
@@ -192,6 +190,7 @@ const BookRide = () => {
     }));
     if (result.meta.requestStatus === "fulfilled") {
       if (instantPool) {
+        setPoolRideId(result.payload._id);
         startPolling(result.payload._id);
         toast("Searching for a pool match...", "info");
       } else {
@@ -234,6 +233,70 @@ const BookRide = () => {
           </div>
           <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>You'll be notified when a match is found.</p>
           <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
+
+          {/* Action buttons */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
+            <button
+              onClick={async () => {
+                if (poolSkipping || !poolRideId) return;
+                setPoolSkipping(true);
+                try {
+                  await api.put(`/rides/${poolRideId}/skip-pool`, {});
+                  toast("Pool skipped — searching for a driver", "info");
+                  setMatchStatus(null);
+                  setInstantPool(false);
+                  setPoolRideId(null);
+                  setPoolSkipping(false);
+                  // Re-book as solo
+                  const result = await dispatch(bookRide({
+                    pickupLocation: pickup, dropoffLocation: dropoff, distance, rideType, paymentMethod,
+                    rideCategory: "standard", instantPool: false,
+                  }));
+                  if (result.meta.requestStatus === "fulfilled") {
+                    setSearchingDriver(result.payload);
+                  } else {
+                    toast(result.payload || "Failed to book solo ride", "error");
+                  }
+                } catch (e) {
+                  toast(e?.response?.data?.message || "Could not skip pool", "error");
+                  setPoolSkipping(false);
+                }
+              }}
+              disabled={poolSkipping}
+              className="rw-btn-primary"
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+            >
+              {poolSkipping ? <span className="rw-spinner" aria-hidden="true" /> : <Zap size={16} />}
+              {poolSkipping ? "Switching to solo..." : "Skip pool — book as solo"}
+            </button>
+            <button
+              onClick={async () => {
+                if (poolCancelling || !poolRideId) return;
+                setPoolCancelling(true);
+                try {
+                  await api.put(`/rides/${poolRideId}/cancel`, {});
+                  toast("Ride cancelled", "info");
+                  setMatchStatus(null);
+                  setPoolRideId(null);
+                  setPollComplete(true);
+                  navigate("/dashboard");
+                } catch (e) {
+                  toast(e?.response?.data?.message || "Could not cancel ride", "error");
+                  setPoolCancelling(false);
+                }
+              }}
+              disabled={poolCancelling}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                width: "100%", background: "#FEF2F2", border: "1px solid #FCA5A5", color: "#DC2626",
+                borderRadius: "var(--radius-md)", padding: "10px 16px", cursor: "pointer",
+                fontWeight: 600, fontSize: "0.875rem", fontFamily: "var(--font-sans)",
+                opacity: poolCancelling ? 0.6 : 1,
+              }}
+            >
+              <XCircle size={16} /> {poolCancelling ? "Cancelling..." : "Cancel ride"}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -343,11 +406,11 @@ const BookRide = () => {
                 <button type="button" onClick={() => setInstantPool(!instantPool)} style={{
                   display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "12px 14px",
                   borderRadius: "10px", cursor: "pointer", fontFamily: "var(--font-sans)", textAlign: "left",
-                  background: instantPool ? "#F0FDF4" : "var(--bg-secondary)",
-                  border: instantPool ? "2px solid #22C55E" : "2px solid transparent",
+                  background: instantPool ? "var(--brand-light)" : "var(--bg-secondary)",
+                  border: instantPool ? "2px solid var(--brand)" : "2px solid transparent",
                   color: "var(--text-primary)", transition: "all 0.15s",
                 }}>
-                  <div style={{ width: "20px", height: "20px", borderRadius: "4px", flexShrink: 0, background: instantPool ? "#22C55E" : "var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: "20px", height: "20px", borderRadius: "4px", flexShrink: 0, background: instantPool ? "var(--brand)" : "var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {instantPool && <CheckCircle size={16} color="white" />}
                   </div>
                   <div style={{ flex: 1 }}>
@@ -372,7 +435,7 @@ const BookRide = () => {
               </div>
             </div>
             {fare > 0 && (
-              <div style={{ background: instantPool ? "#F0FDF4" : "var(--brand-light)", borderRadius: "10px", padding: "14px 16px", borderLeft: instantPool ? "4px solid #22C55E" : "4px solid var(--brand)" }}>
+              <div style={{ background: instantPool ? "var(--brand-light)" : "var(--brand-light)", borderRadius: "10px", padding: "14px 16px", borderLeft: instantPool ? "4px solid var(--brand)" : "4px solid var(--brand)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}><span style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Distance</span><span style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "0.85rem" }}>{distance} km</span></div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                   <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>{instantPool ? "Pool Fare (if matched)" : "Estimated Fare"}</span>

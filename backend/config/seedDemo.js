@@ -13,13 +13,31 @@ const DEMO_USERS = [
   },
   { name: "Test Passenger", email: "passenger@test.com", password: "pass123", phone: "1234567890", role: "passenger" },
   { name: "Test Passenger 2", email: "passenger2@test.com", password: "pass456", phone: "1122334455", role: "passenger" },
+  { name: "Test Passenger 3", email: "passenger3@test.com", password: "pass789", phone: "2233445566", role: "passenger" },
+  { name: "Test Passenger 4", email: "passenger4@test.com", password: "pass000", phone: "3344556677", role: "passenger" },
   {
-    name: "Test Driver",
+    name: "Test Driver (Car)",
     email: "driver@test.com",
     password: "drive123",
     phone: "0987654321",
     role: "driver",
     vehicle: { type: "car", model: "Maruti Swift", number: "GJ 03 AB 1234", carSubtype: "Hatchback", seatingCapacity: 5 },
+  },
+  {
+    name: "Test Driver (Auto)",
+    email: "driver-auto@test.com",
+    password: "drive123",
+    phone: "0987654322",
+    role: "driver",
+    vehicle: { type: "auto", model: "Bajaj RE", number: "GJ 03 CD 5678", seatingCapacity: 4 },
+  },
+  {
+    name: "Test Driver (Bike)",
+    email: "driver-bike@test.com",
+    password: "drive123",
+    phone: "0987654323",
+    role: "driver",
+    vehicle: { type: "bike", model: "Honda Activa", number: "GJ 03 EF 9012", seatingCapacity: 2 },
   },
 ];
 

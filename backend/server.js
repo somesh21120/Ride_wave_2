@@ -54,7 +54,7 @@ app.use("/api/recurring", requireDb, require("./routes/recurringRideRoutes"));
 app.use("/api/reviews", requireDb, require("./routes/reviewRoutes"));
 app.use("/api/admin", requireDb, require("./routes/adminRoutes"));
 app.use("/api/payment", requireDb, require("./routes/paymentRoutes"));
-app.use("/api/lab", require("./routes/labRoutes")); // Pooling Lab (simulated data, no database needed)
+// Pooling Lab removed — corridor matching logs are now available in the admin panel at /admin/match-logs
 app.use("/api/public", require("./routes/publicRoutes")); // Public endpoints (trip share, no auth)
 
 app.use("/api", notFound);

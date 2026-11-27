@@ -1,30 +1,38 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginUser, clearError } from "../redux/authSlice";
+import api from "../services/api";
 import { ShieldCheck, Mail, Lock, ArrowRight } from "lucide-react";
 import BrandLogo from "../components/BrandLogo";
 
 const AdminLogin = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, loading, error } = useSelector((state) => state.auth);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (user) {
-      if (user.role === "admin") navigate("/admin");
-      else navigate("/");
-    }
-  }, [user, navigate]);
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (user) {
+        if (user.role === "admin") navigate("/admin");
+        else navigate("/");
+      }
+    } catch { /* ignore */ }
+  }, [navigate]);
 
-  useEffect(() => {
-    if (error) { dispatch(clearError()); }
-  }, [error]);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginUser(form));
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.post("/auth/admin-login", form);
+      localStorage.setItem("user", JSON.stringify(data));
+      navigate("/admin");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -128,10 +136,6 @@ const AdminLogin = () => {
             {loading ? "Signing in..." : (<>Sign In <ArrowRight size={16} /></>)}
           </button>
         </form>
-
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.8rem", marginTop: "20px" }}>
-          Demo: <strong>admin@ridewave.app</strong> / <strong>Admin@123</strong>
-        </p>
       </div>
     </div>
   );

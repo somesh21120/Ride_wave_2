@@ -53,8 +53,23 @@ const bookRide = async (req, res) => {
 
 const getMyRides = async (req, res) => {
   try {
-    const rides = await Ride.find({ passenger: req.user._id }).select("+startOtp").populate("driver", "name phone vehicle").populate("coRiders.user", "name phone").populate("poolMatchedRide", "pickupLocation dropoffLocation distance fare driver status").sort({ createdAt: -1 });
-    res.json(rides);
+    const myId = req.user._id;
+    const rides = await Ride.find({ passenger: myId }).select("+startOtp").populate("driver", "name phone vehicle").populate("coRiders.user", "name phone").populate("poolMatchedRide", "pickupLocation dropoffLocation distance fare driver status").sort({ createdAt: -1 });
+    // Also include the spine ride if the user is a co-rider in an active pool
+    const coRiderRides = await Ride.find({
+      "coRiders.user": myId,
+      status: { $in: ["accepted", "ongoing"] },
+    }).select("+coRiders.otp").populate("passenger", "name phone").populate("driver", "name phone vehicle").populate("coRiders.user", "name phone").sort({ createdAt: -1 });
+    // Mark co-rider rides and add their OTP
+    const allRides = [...rides];
+    for (const spine of coRiderRides) {
+      const myEntry = spine.coRiders.find((c) => String(c.user?._id || c.user) === String(myId));
+      const spineObj = spine.toObject();
+      spineObj.myOtp = myEntry?.otp || null;
+      spineObj.isCoRider = true;
+      allRides.push(spineObj);
+    }
+    res.json(allRides);
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
@@ -71,6 +86,18 @@ const getRideById = async (req, res) => {
     if (String(ride.passenger?._id) === me) {
       const withOtp = await Ride.findById(ride._id).select("+startOtp").lean();
       return res.json({ ...ride.toObject(), startOtp: withOtp?.startOtp || null });
+    }
+    // Driver: expose co-rider OTPs for multi-stop pickup
+    if (String(ride.driver?._id) === me) {
+      const withCoOtps = await Ride.findById(ride._id).populate("passenger", "name phone").populate("driver", "name phone vehicle").populate("coRiders.user", "name phone").select("+coRiders.otp").lean();
+      return res.json(withCoOtps);
+    }
+    // Co-rider: show their own OTP
+    const myCo = ride.coRiders.find((c) => String(c.user?._id || c.user) === me);
+    if (myCo) {
+      const withOtp = await Ride.findById(ride._id).select("+coRiders.otp").lean();
+      const myEntry = withOtp.coRiders.find((c) => String(c.user) === me);
+      return res.json({ ...ride.toObject(), myOtp: myEntry?.otp || null });
     }
     res.json(ride);
   } catch (error) { fail(res, error); }
@@ -110,7 +137,10 @@ const getAvailableRides = async (req, res) => {
     const driver = await User.findById(req.user._id);
     const vehicleType = driver?.vehicle?.type;
     const rideTypeFilter = vehicleType ? { rideType: vehicleType } : {};
-    const rides = await Ride.find({ status: "requested", poolMatchStatus: { $ne: "waiting_for_match" }, rejectedBy: { $ne: req.user._id }, ...rideTypeFilter }).populate("passenger", "name phone").sort({ createdAt: -1 });
+    // Show all requested rides to drivers, including those waiting for a pool match.
+    // If a driver accepts while the pool matcher is still evaluating, the ride transitions
+    // to "accepted" and the pool match is cancelled (the matcher only touches "requested" rides).
+    const rides = await Ride.find({ status: "requested", rejectedBy: { $ne: req.user._id }, ...rideTypeFilter }).populate("passenger", "name phone").sort({ createdAt: -1 });
     res.json(rides);
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
@@ -122,9 +152,10 @@ const acceptRide = async (req, res) => {
     if (busy) return res.status(400).json({ message: "Finish your current ride before accepting another" });
     // Atomic claim: only one driver can move a ride out of "requested",
     // even if two drivers tap Accept at the same moment.
+    // Also accept rides that are waiting for a pool match — the driver takes priority.
     const ride = await Ride.findOneAndUpdate(
-      { _id: req.params.id, status: "requested", poolMatchStatus: { $ne: "waiting_for_match" } },
-      { $set: { driver: req.user._id, status: "accepted", acceptedAt: new Date(), startOtp: newStartOtp() } },
+      { _id: req.params.id, status: "requested" },
+      { $set: { driver: req.user._id, status: "accepted", acceptedAt: new Date(), startOtp: newStartOtp(), poolMatchStatus: "reverted_to_solo", rideCategory: "standard", poolSavings: 0 } },
       { new: true }
     ).populate("driver", "name phone vehicle").populate("passenger", "name phone");
     if (!ride) {
@@ -162,6 +193,11 @@ const startRide = async (req, res) => {
     ride.status = "ongoing";
     ride.startedAt = new Date();
     ride.startOtp = null;
+    // Mark the main passenger as picked up
+    if (ride.rideCategory === "pool" && ride.coRiders.length > 0) {
+      const mainCo = ride.coRiders.find((c) => c.status === "joined");
+      if (mainCo) { mainCo.status = "picked_up"; mainCo.pickedUpAt = new Date(); }
+    }
     await ride.save();
     notifyRide(ride, "started");
     res.json(ride);
@@ -278,4 +314,46 @@ const sosRide = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { bookRide, getMyRides, getRideById, cancelRide, getAvailableRides, acceptRide, rejectRide, startRide, completeRide, getOpenPools, joinPool, leavePool, getDriverRides, getPoolMatchStatus, shareRide, sosRide };
+// ---- Skip pool match — revert to solo immediately so the ride is visible to drivers ----
+const skipPool = async (req, res) => {
+  try {
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ message: "Ride not found" });
+    if (String(ride.passenger) !== String(req.user._id)) return res.status(403).json({ message: "Only the passenger can skip pool" });
+    if (ride.poolMatchStatus !== "waiting_for_match") return res.status(400).json({ message: "Ride is not waiting for a pool match" });
+    const fullFare = calcFare(ride.distance, ride.rideType, false);
+    ride.fare = fullFare;
+    ride.poolSavings = 0;
+    ride.poolMatchStatus = "reverted_to_solo";
+    ride.rideCategory = "standard";
+    await ride.save();
+    notifyRide(ride, "pool_solo");
+    res.json(ride);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// ---- Driver picks up a co-rider (multi-stop corridor pool) ----
+const pickupCoRider = async (req, res) => {
+  try {
+    const { coRiderUserId, otp } = req.body;
+    if (!coRiderUserId || !otp) return res.status(400).json({ message: "coRiderUserId and otp are required" });
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ message: "Ride not found" });
+    if (String(ride.driver) !== String(req.user._id)) return res.status(403).json({ message: "Only the driver can confirm pickup" });
+    if (ride.status !== "ongoing") return res.status(400).json({ message: "Ride must be ongoing" });
+    const coIdx = ride.coRiders.findIndex((c) => String(c.user) === String(coRiderUserId));
+    if (coIdx === -1) return res.status(404).json({ message: "Co-rider not found in this ride" });
+    const co = ride.coRiders[coIdx];
+    if (co.status === "picked_up") return res.status(400).json({ message: "Co-rider already picked up" });
+    if (co.status === "cancelled") return res.status(400).json({ message: "Co-rider cancelled" });
+    if (String(otp).trim() !== String(co.otp)) return res.status(400).json({ message: "Incorrect OTP for this co-rider" });
+    co.status = "picked_up";
+    co.pickedUpAt = new Date();
+    co.otp = null;
+    await ride.save();
+    notifyRide(ride, "corider_picked_up");
+    res.json(ride);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = { bookRide, getMyRides, getRideById, cancelRide, getAvailableRides, acceptRide, rejectRide, startRide, completeRide, getOpenPools, joinPool, leavePool, getDriverRides, getPoolMatchStatus, skipPool, pickupCoRider, shareRide, sosRide };

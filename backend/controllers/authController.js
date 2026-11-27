@@ -162,4 +162,17 @@ const deleteOwnAccount = async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, sendOtp, getSavedPlaces, addSavedPlace, updateSavedPlace, deleteSavedPlace, deleteOwnAccount };
+// ── Admin Login (separate endpoint so /api/auth/login can block admins) ──
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "No account found with this email" });
+    if (!(await user.matchPassword(password))) return res.status(401).json({ message: "Incorrect password" });
+    if (user.role !== "admin") return res.status(403).json({ message: "Only admin accounts can sign in here." });
+    if (user.isActive === false) return res.status(403).json({ message: "Your account has been deactivated. Contact support." });
+    res.json({ _id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, createdAt: user.createdAt, token: generateToken(user._id) });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = { registerUser, loginUser, adminLogin, getUserProfile, updateUserProfile, sendOtp, getSavedPlaces, addSavedPlace, updateSavedPlace, deleteSavedPlace, deleteOwnAccount };
