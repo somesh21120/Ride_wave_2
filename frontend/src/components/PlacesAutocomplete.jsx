@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { MapPin, Locate, Loader } from "lucide-react";
+import { MapPin, Locate, Loader, Navigation } from "lucide-react";
 import { searchPlaces, reverseGeocode } from "../services/geocode";
 
 const PlacesAutocomplete = ({ placeholder, onPlaceSelect, isPickup = false, value }) => {
@@ -74,11 +74,20 @@ const PlacesAutocomplete = ({ placeholder, onPlaceSelect, isPickup = false, valu
         )}
       </div>
       {open && results.length > 0 && (
-        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", boxShadow: "var(--shadow-lg)", zIndex: 2000, maxHeight: "240px", overflowY: "auto", marginTop: "4px" }}>
+        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "10px", boxShadow: "var(--shadow-lg)", zIndex: 2000, maxHeight: "280px", overflowY: "auto", marginTop: "4px" }}>
           {results.map((r, i) => (
             <div key={i} onMouseDown={(e) => { e.preventDefault(); selectResult(r); }}
-              style={{ padding: "8px 12px", cursor: "pointer", fontSize: "0.85rem", color: "var(--text-primary)", borderBottom: i < results.length - 1 ? "1px solid var(--border)" : "none" }}>
-              {r.address}
+              style={{ padding: "10px 12px", cursor: "pointer", color: "var(--text-primary)", borderBottom: i < results.length - 1 ? "1px solid var(--border)" : "none" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                <Navigation size={14} color="var(--brand)" style={{ marginTop: "3px", flexShrink: 0 }} />
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.shortAddress || r.address}</p>
+                  <div style={{ display: "flex", gap: "6px", marginTop: "3px" }}>
+                    <span style={{ fontSize: "0.68rem", background: "var(--brand-light)", color: "var(--brand)", padding: "1px 8px", borderRadius: "10px", fontWeight: 600, display: "inline-block" }}>{r.type || "Place"}</span>
+                    <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>{r.lat.toFixed(4)}, {r.lng.toFixed(4)}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
