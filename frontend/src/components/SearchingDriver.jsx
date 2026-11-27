@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { Navigation, MapPin, Clock } from "lucide-react";
+import { Navigation, MapPin, Clock, XCircle } from "lucide-react";
 import api from "../services/api";
+import { useToast } from "../context/ToastContext";
 
-const SearchingDriver = ({ ride, onDriverAccepted }) => {
+const SearchingDriver = ({ ride, onDriverAccepted, onCancel }) => {
+  const { toast } = useToast();
   const [elapsed, setElapsed] = useState(0);
   const [dots, setDots] = useState("");
+  const [cancelling, setCancelling] = useState(false);
 
   // Poll for acceptance
   useEffect(() => {
@@ -106,6 +109,32 @@ const SearchingDriver = ({ ride, onDriverAccepted }) => {
             50% { transform: scale(1.4); opacity: 0; }
           }
         `}</style>
+
+        {/* Cancel ride button */}
+        <button
+          onClick={async () => {
+            if (cancelling) return;
+            setCancelling(true);
+            try {
+              await api.put(`/rides/${ride._id}/cancel`, {});
+              toast("Ride cancelled", "info");
+              onCancel?.();
+            } catch (e) {
+              toast(e?.response?.data?.message || "Could not cancel ride", "error");
+              setCancelling(false);
+            }
+          }}
+          disabled={cancelling}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+            width: "100%", background: "#FEF2F2", border: "1px solid #FCA5A5", color: "#DC2626",
+            borderRadius: "var(--radius-md)", padding: "10px 16px", cursor: "pointer",
+            fontWeight: 600, fontSize: "0.875rem", fontFamily: "var(--font-sans)",
+            marginTop: "12px", opacity: cancelling ? 0.6 : 1,
+          }}
+        >
+          <XCircle size={16} /> {cancelling ? "Cancelling..." : "Cancel ride"}
+        </button>
       </div>
     </div>
   );

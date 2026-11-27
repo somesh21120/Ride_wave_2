@@ -49,6 +49,31 @@ const BookRide = () => {
   const fare = distance ? Math.round(selected.base + selected.per * distance) : 0;
   const poolFare = distance && instantPool ? Math.round((selected.base + selected.per * distance) * 0.7) : 0;
 
+  // Request location permission and auto-detect pickup on page load
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.permissions?.query({ name: "geolocation" }).then((result) => {
+      if (result.state === "prompt") {
+        // Browser will ask on the first getCurrentPosition call
+      }
+    }).catch(() => {});
+    // Auto-detect current location for pickup
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        try {
+          const { reverseGeocode } = await import("../services/geocode");
+          const address = await reverseGeocode(lat, lng);
+          setPickup({ lat, lng, address });
+        } catch {
+          setPickup({ lat, lng, address: `Dropped pin (${lat.toFixed(5)}, ${lng.toFixed(5)})` });
+        }
+      },
+      () => { /* user denied or unavailable — no auto-pickup */ },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }, []);
+
   // Cleanup polling on unmount
   useEffect(() => {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
@@ -182,6 +207,7 @@ const BookRide = () => {
       <SearchingDriver
         ride={searchingDriver}
         onDriverAccepted={onDriverAccepted}
+        onCancel={() => setSearchingDriver(null)}
       />
     );
   }

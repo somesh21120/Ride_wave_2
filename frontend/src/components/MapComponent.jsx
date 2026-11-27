@@ -19,9 +19,19 @@ const pickupIcon = new L.DivIcon({ className: "", html: '<div style="width:16px;
 const dropoffIcon = new L.DivIcon({ className: "", html: '<div style="width:16px;height:16px;border-radius:50%;background:#EF4444;border:3px solid #fff;box-shadow:0 0 0 2px #EF4444;"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
 
 // Inner component to access the Leaflet map instance (setView on changes).
-const Recenter = ({ center }) => {
+const Recenter = ({ center, pickupCoords, dropoffCoords }) => {
   const map = useMap();
-  useEffect(() => { if (center) map.setView(center, map.getZoom()); }, [center, map]);
+  useEffect(() => {
+    if (pickupCoords && dropoffCoords) {
+      const bounds = L.latLngBounds(
+        [pickupCoords.lat, pickupCoords.lng],
+        [dropoffCoords.lat, dropoffCoords.lng]
+      );
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (center) {
+      map.setView(center, map.getZoom());
+    }
+  }, [center, pickupCoords, dropoffCoords, map]);
   return null;
 };
 
@@ -74,7 +84,7 @@ const MapComponent = ({ pickupCoords, dropoffCoords, height = "100%", activeFiel
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <Recenter center={center} />
+        <Recenter center={center} pickupCoords={pickupCoords} dropoffCoords={dropoffCoords} />
         {pickupCoords && <Marker position={[pickupCoords.lat, pickupCoords.lng]} icon={pickupIcon} draggable={!!onPickupChange} eventHandlers={{ dragend: (e) => { const { lat, lng } = e.target.getLatLng(); applyPick(lat, lng, "pickup"); } }} />}
         {dropoffCoords && <Marker position={[dropoffCoords.lat, dropoffCoords.lng]} icon={dropoffIcon} draggable={!!onDropoffChange} eventHandlers={{ dragend: (e) => { const { lat, lng } = e.target.getLatLng(); applyPick(lat, lng, "dropoff"); } }} />}
         {route && <Polyline positions={route} pathOptions={{ color: "var(--brand)", weight: 5, opacity: 0.9 }} />}
