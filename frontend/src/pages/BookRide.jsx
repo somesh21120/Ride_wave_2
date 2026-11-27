@@ -13,6 +13,9 @@ import { Bike, Car, CheckCircle, CreditCard, Banknote, Navigation, MapPin, Users
 import api from "../services/api";
 import { getRoute } from "../services/geocode";
 const MAX_RIDE_DIST = 50; // max km allowed
+// India approximate bounding box
+const INDIA_BOUNDS = { latMin: 6.5, latMax: 35.5, lngMin: 68.0, lngMax: 97.5 };
+const isInIndia = (loc) => loc && loc.lat >= INDIA_BOUNDS.latMin && loc.lat <= INDIA_BOUNDS.latMax && loc.lng >= INDIA_BOUNDS.lngMin && loc.lng <= INDIA_BOUNDS.lngMax;
 const RIDE_TYPES = [
   { type: "bike", label: "Bike", Icon: Bike, desc: "Fastest & cheapest", seats: 1, base: 20, per: 8 },
   { type: "auto", label: "Auto", Icon: Car, desc: "Comfortable ride", seats: 3, base: 30, per: 12 },
@@ -87,6 +90,8 @@ const BookRide = () => {
   const handleSubmit = async () => {
     if (!pickup) return toast("Please select a pickup location", "error");
     if (!dropoff) return toast("Please select a dropoff location", "error");
+    if (!isInIndia(pickup)) return toast("Pickup must be in India", "error");
+    if (!isInIndia(dropoff)) return toast("Dropoff must be in India", "error");
     if (distance < 0.1) return toast("Pickup and dropoff are too close", "error");
     if (distance > MAX_RIDE_DIST) return toast("This route is too long for RideWave — try a shorter trip", "error");
     // Route sanity: OSRM must return a plausible driving route near the straight-line distance.

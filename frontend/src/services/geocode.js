@@ -4,9 +4,11 @@
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 
-// Search for places by text query. Returns array of { address, lat, lng }.
+// Search for places — restricted to India only (countrycodes=in).
+// Returns array of { address, lat, lng }.
 export const searchPlaces = async (query) => {
-  const url = `${NOMINATIM}/search?format=json&limit=5&q=${encodeURIComponent(query)}`;
+  // Bias results to India and nearby region
+  const url = `${NOMINATIM}/search?format=json&limit=5&countrycodes=in&q=${encodeURIComponent(query)}`;
   const res = await fetch(url, { headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error("Search failed");
   const data = await res.json();

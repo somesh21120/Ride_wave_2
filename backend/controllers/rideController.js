@@ -20,6 +20,9 @@ const newStartOtp = () => String(crypto.randomInt(1000, 10000));
 const fail = (res, error) => res.status(error.status || 500).json({ message: error.message });
 
 const MAX_RIDE_DIST_KM = 50;
+// India bounding box
+const INDIA_BOUNDS = { latMin: 6.5, latMax: 35.5, lngMin: 68.0, lngMax: 97.5 };
+const isInIndia = (loc) => loc && typeof loc.lat === "number" && typeof loc.lng === "number" && loc.lat >= INDIA_BOUNDS.latMin && loc.lat <= INDIA_BOUNDS.latMax && loc.lng >= INDIA_BOUNDS.lngMin && loc.lng <= INDIA_BOUNDS.lngMax;
 // Only multi-seat vehicles can be pooled (a bike carries one passenger)
 const POOLABLE = ["car", "auto"];
 
@@ -31,6 +34,8 @@ const bookRide = async (req, res) => {
     const isInstantPool = instantPool === true && (rideType === "car" || rideType === "auto");
     if (typeof distance !== "number" || isNaN(distance)) return res.status(400).json({ message: "Invalid ride distance" });
     if (distance > MAX_RIDE_DIST_KM) return res.status(400).json({ message: "This route is too long for RideWave - try a shorter trip" });
+    if (!isInIndia(pickupLocation)) return res.status(400).json({ message: "Pickup location must be in India" });
+    if (!isInIndia(dropoffLocation)) return res.status(400).json({ message: "Dropoff location must be in India" });
     if (isInstantPool) {
       const poolFare = calcFare(distance, rideType, true);
       const fullFare = calcFare(distance, rideType, false);
