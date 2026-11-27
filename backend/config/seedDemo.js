@@ -1,7 +1,7 @@
 /**
  * Demo accounts, created automatically when the database has no users yet
  * (a fresh local database or a new empty Atlas cluster). Turn off with SEED_DEMO=off.
- * The same list is used by seedTestUsers.js / RIDEWAVE_TOOLS option 4.
+ * The same list is used by seedTestUsers.js.
  */
 const DEMO_USERS = [
   {

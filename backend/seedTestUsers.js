@@ -1,5 +1,5 @@
 // Creates or resets the demo accounts (admin, driver, two passengers).
-// Usage: node seedTestUsers.js   (RIDEWAVE_TOOLS.bat option 4)
+// Usage: node seedTestUsers.js
 // Works with an online MONGO_URI and with MONGO_URI=local (reuses the running local database).
 require("dotenv").config();
 const mongoose = require("mongoose");

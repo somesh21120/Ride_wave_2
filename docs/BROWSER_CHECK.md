@@ -4,7 +4,7 @@ Run on localhost first, then again on the hosted build. Two browsers for passeng
 Tick an item only after seeing it work. Note failures in the bug format from `docs/DEVELOPMENT_GUIDE.md` section 5.
 
 ## 1. Automated (run before anything else)
-- [ ] `cd backend && npm test`: 27 passing (or menu option 3 in `RIDEWAVE_TOOLS.bat`)
+- [ ] `cd backend && npm test`: 27 passing
 - [ ] `cd frontend && npm run lint`: 0 errors
 - [ ] `cd frontend && npm run build`: succeeds
 - [ ] `http://localhost:5000/api/health`: status ok, version 2.0.0-alpha.2, db connected, poolMatcher shown

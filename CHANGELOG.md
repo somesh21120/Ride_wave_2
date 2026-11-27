@@ -22,10 +22,10 @@ Sem 8 changes are grouped three ways:
 
 
 ### Engineering
-- **Built-in local database:** `MONGO_URI=local` (the default for a fresh copy) runs MongoDB from inside the backend with no install; data in `backend/.localdb`; demo accounts created automatically in an empty database. RIDEWAVE_TOOLS option 14 switches between local and Atlas. A shared copy of the folder now runs on any PC with only Node.js.
+- **Built-in local database:** `MONGO_URI=local` (the default for a fresh copy) runs MongoDB from inside the backend with no install; data in `backend/.localdb`; demo accounts created automatically in an empty database. A shared copy of the folder now runs on any PC with only Node.js.
 - **Startup reliability:** the API starts before the database connects, retries every 10 s with plain-language reasons (Atlas IP allow list, paused cluster, blocked DNS with automatic public-DNS retry), and keeps a log in `backend/logs/server.log`; the launcher prints the cause instead of timing out.
 
-- **Local-only phone demo:** RIDEWAVE_TOOLS option 15 serves a production build from the laptop to phones on the same Wi-Fi or hotspot, with an optional temporary public https link (Cloudflare quick tunnel). The frontend now reaches the API and Socket.IO through its own address (Vite proxy), so phones get live updates.
+- **Local-only phone demo:** Serves a production build from the laptop to phones on the same Wi-Fi or hotspot, with an optional temporary public https link (Cloudflare quick tunnel). The frontend now reaches the API and Socket.IO through its own address (Vite proxy), so phones get live updates.
 
 ### Optimization of Sem 7 modules
 - Real-time updates no longer blocked when the app is opened at 127.0.0.1 instead of localhost (both origins allowed in development).
@@ -47,7 +47,7 @@ Sem 8 changes are grouped three ways:
 
 ### Engineering
 - 27 automated tests (state machine, fares, corridor matching, live corridor pooling step, ML and simulation); API smoke test now covers the ride code.
-- `RUN_RIDEWAVE.bat` one-click start and `RIDEWAVE_TOOLS.bat` menu (checks, demo accounts, commits, checkpoints, simulation, matcher switch).
+- `RUN_RIDEWAVE.bat` one-click start that launches both servers and opens the app.
 - New settings in `.env.example`: `POOL_MATCHER`, `ROUTING`, `OSRM_URL`. `/api/health` reports the active pool matcher.
 - Version set to `2.0.0-alpha.2`.
 

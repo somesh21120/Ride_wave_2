@@ -3,7 +3,7 @@
 RideWave runs entirely on the laptop: backend, built-in database and frontend. Nothing is pushed to GitHub or hosted in the cloud. Phones reach the laptop in one of two ways.
 
 ## Start it
-`RIDEWAVE_TOOLS.bat` option **15**. It:
+The phone demo feature. It:
 1. starts the backend if it is not running (built-in local database);
 2. builds the frontend and serves it on port **4173** (window "RideWave Phone Demo");
 3. prints the addresses phones can open;

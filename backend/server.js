@@ -65,7 +65,7 @@ socketHandler(io);
 // Listen first, so the health check and Pooling Lab answer even if the database is slow or down
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
-    console.error(`Port ${config.port} is already in use. Close the other RideWave Backend window, or run option 2 (Stop) in RIDEWAVE_TOOLS.bat.`);
+    console.error(`Port ${config.port} is already in use. Close the other RideWave Backend window.`);
   } else {
     console.error("Server error:", err.message);
   }

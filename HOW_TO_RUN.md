@@ -12,8 +12,8 @@ After the first start, RideWave also works offline (except the road routes on th
 ## Start it (every time)
 1. Open the `ridewave-app` folder.
 2. Double-click **`RUN_RIDEWAVE.bat`**.
-3. A menu appears. Press **1** (or just wait 15 seconds).
-4. The app opens in your browser at http://127.0.0.1:5173
+3. The backend and frontend start automatically. Wait for the browser to open.
+4. The app opens at http://127.0.0.1:5173
 
 The backend and frontend run in two **minimised** windows on the taskbar. Do not close them while you use the app.
 
@@ -26,32 +26,19 @@ The black window shows each step. Just wait until the browser opens.
 
 If Windows asks about the firewall for Node.js, click **Allow** (Private networks).
 
-## Start menu options
-| Key | Option | Use it for |
-|---|---|---|
-| 1 | Quick start | Normal use on the laptop |
-| 2 | Faculty demo | Starts the app and opens the ML Lab (log in as Admin) |
-| 3 | Phone demo, same Wi-Fi | Phones on the same Wi-Fi or on the laptop's hotspot. The window prints the link to type on the phone. |
-| 4 | Phone demo, public link | Phones on mobile data. Gives a temporary https link. Use this when the driver's live location must work on a phone. |
-| 5 | Stop RideWave | Closes all RideWave servers |
-| 6 | More tools | Checks, reset demo accounts, save work, database switch, share zip |
-| 0 | Exit | |
-
 ## Demo accounts
 All of these exist automatically on a fresh copy.
 
-| Role | Email | Password | Opens on |
-|---|---|---|---|
-| Admin | admin@ridewave.app | Admin@123 | Admin panel (ML Lab is in its menu) |
-| Driver | driver@test.com | drive123 | Driver dashboard |
-| Passenger | passenger@test.com | pass123 | Passenger home |
-| Passenger 2 | passenger2@test.com | pass456 | Passenger home |
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@ridewave.app | Admin@123 |
+| Driver | driver@test.com | drive123 |
+| Passenger | passenger@test.com | pass123 |
+| Passenger 2 | passenger2@test.com | pass456 |
 
 Any login page works for every account; each one opens its own screen.
 
 The driver account has a car: Maruti Swift, GJ 03 AB 1234, 5 seats.
-
-If a password was changed and no longer works: `RUN_RIDEWAVE.bat` → 6 (More tools) → 4 (Create demo accounts). This resets all four to the passwords above.
 
 ### Trying a full ride
 1. Open two browser windows (one normal, one Incognito/InPrivate).
@@ -68,34 +55,11 @@ Online payment works only when `backend\.env` has the Razorpay **test** keys. Ca
 
 No real money is ever charged in test mode.
 
-## Sharing the project with a teammate
-1. `RUN_RIDEWAVE.bat` → 6 (More tools) → **16 (Make a zip to share)**.
-2. Answer **y** to include your `backend\.env` (Razorpay test keys) or **n** to leave it out.
-3. A file `RideWave-share-<date>.zip` is made next to the project folder, and Explorer opens on it.
-4. Send that zip. The teammate unzips it and double-clicks `RUN_RIDEWAVE.bat`. That is all.
-
-Do not zip the folder by hand with right-click: that copies `node_modules` (hundreds of MB of files) and your personal database.
-
-Each laptop has its **own** database. Rides booked on one laptop do not appear on another.
-
 ## If something goes wrong
 | Problem | Fix |
 |---|---|
 | Browser shows "Database not connected" | First start is still downloading MongoDB. Keep the internet on and wait 2 to 3 minutes, then refresh. |
-| "Port 5000 / 5173 is already in use" | Start menu → 5 (Stop), then start again. |
-| Blank or broken page | Press Ctrl + Shift + R in the browser. If it stays broken: Start menu → 6 → 8 (Reinstall packages). |
-| Phone cannot open the link | Phone and laptop must be on the same Wi-Fi (or the phone on the laptop's hotspot). Otherwise use option 4. |
+| "Port 5000 / 5173 is already in use" | Close the existing RideWave Backend/Frontend windows on the taskbar, then run RUN_RIDEWAVE.bat again. |
+| Blank or broken page | Press Ctrl + Shift + R in the browser. If it stays broken, run `cd frontend && npm install` then `npm run build`. |
 | Want to see an error message | Click the minimised "RideWave Backend" or "RideWave Frontend" window on the taskbar. The backend log is also saved in `backend\logs\server.log`. |
 | Want a completely fresh database | Stop RideWave, delete the folder `backend\.localdb`, start again. Demo accounts are recreated. |
-
-## For developers (manual start)
-```bat
-cd backend
-npm install
-npm run dev        :: http://localhost:5000/api/health
-
-cd frontend
-npm install
-npm run dev        :: http://127.0.0.1:5173
-```
-Checks: More tools → 3 (tests, lint and build).

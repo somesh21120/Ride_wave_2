@@ -48,7 +48,7 @@ async function startLocalServer() {
     ({ MongoMemoryServer } = require("mongodb-memory-server-core"));
   } catch {
     throw new Error(
-      "Local database package missing. Run RIDEWAVE_TOOLS.bat option 8 (Reinstall packages), or 'npm install' in the backend folder."
+      "Local database package missing. Run 'npm install' in the backend folder."
     );
   }
   fs.mkdirSync(LOCAL_DB_PATH, { recursive: true });

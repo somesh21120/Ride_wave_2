@@ -25,7 +25,7 @@ Full list with status: [`docs/FEATURES.md`](docs/FEATURES.md)
 Step by step guide with all demo logins: **[HOW_TO_RUN.md](HOW_TO_RUN.md)**
 
 - **`RUN_RIDEWAVE.bat`**: start menu (quick start, faculty demo, phone demo, stop). On first run it downloads Node.js if missing, installs packages, starts the built-in database, backend and frontend, then opens the app.
-- **`RIDEWAVE_TOOLS.bat`**: menu for stop, checks (tests, lint, build), demo accounts, saving work (git commit), checkpoints, version history.
+- **`RUN_RIDEWAVE.bat`**: starts both servers and opens the app in the browser.
 
 ## Quick start (manual)
 ```bat

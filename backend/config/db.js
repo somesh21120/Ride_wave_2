@@ -14,9 +14,9 @@ const RETRY_MS = Number(process.env.DB_RETRY_MS) || 10000;
 function explain(err, uri) {
   const msg = String((err && err.message) || err);
   if (isLocalMode(uri)) {
-    if (/package missing/i.test(msg)) return "Run RIDEWAVE_TOOLS.bat option 8 (Reinstall packages).";
+    if (/package missing/i.test(msg)) return "Run 'npm install' in the backend folder.";
     if (/download|fetch|ENOTFOUND|EAI_AGAIN|ECONNRESET/i.test(msg)) return "The first run must download MongoDB (about 70 MB). Connect to the internet and it will retry by itself.";
-    return "The built-in local database could not start. Close other RideWave windows (RIDEWAVE_TOOLS option 2) and start again. If it keeps failing, rename backend\\.localdb to start with an empty database.";
+    return "The built-in local database could not start. Close other RideWave windows and start again. If it keeps failing, rename backend\\.localdb to start with an empty database.";
   }
   const isAtlas = /^mongodb\+srv:/i.test(uri || "");
   if (/querySrv|ENOTFOUND|ECONNREFUSED.*_mongodb|EREFUSED|ETIMEOUT/i.test(msg) && isAtlas) {

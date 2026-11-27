@@ -1,5 +1,5 @@
 # Downloads a private copy of Node.js (LTS) into <project>\.runtime\node.
-# Used by RUN_RIDEWAVE.bat and RIDEWAVE_TOOLS.bat when the computer has no Node.js.
+# Used by RUN_RIDEWAVE.bat when the computer has no Node.js.
 # No admin rights needed and nothing is installed system wide: delete .runtime to remove it.
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
