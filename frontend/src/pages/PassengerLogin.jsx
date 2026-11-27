@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser, clearError } from "../redux/authSlice";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import { useToast } from "../context/ToastContext";
 import AuthLayout from "../components/auth/AuthLayout";
 
@@ -39,6 +39,11 @@ const PassengerLogin = () => {
         <p style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: "8px", fontSize: "0.875rem" }}>
           New here? <Link to="/register/passenger" style={{ color: "var(--brand)", fontWeight: 600, textDecoration: "none" }}>Create an account</Link>
         </p>
+                <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
+                  <Link to="/admin/login" style={{ color: "var(--text-muted)", fontSize: "0.8rem", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    <ShieldCheck size={12} /> Admin sign in
+                  </Link>
+                </div>
       </form>
     </AuthLayout>
   );

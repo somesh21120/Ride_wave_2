@@ -12,6 +12,7 @@ import DriverDashboard from "./pages/DriverDashboard";
 import Profile from "./pages/Profile";
 import DailyRides from "./pages/DailyRides";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
@@ -52,7 +53,7 @@ const PrivateRoute = ({ children }) => {
 };
 const AdminRoute = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/admin/login" replace />;
   if (user.role !== "admin") return <Navigate to="/dashboard" replace />;
   return <AppLayout>{children}</AppLayout>;
 };
@@ -73,6 +74,7 @@ function AppRoutes() {
         <Route path="/login" element={<PublicLayout><PassengerLogin /></PublicLayout>} />
         <Route path="/login/passenger" element={<PublicLayout><PassengerLogin /></PublicLayout>} />
         <Route path="/login/driver" element={<PublicLayout><DriverLogin /></PublicLayout>} />
+        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/register" element={<PublicLayout><PassengerRegister /></PublicLayout>} />
         <Route path="/register/passenger" element={<PublicLayout><PassengerRegister /></PublicLayout>} />
         <Route path="/register/driver" element={<PublicLayout><DriverRegister /></PublicLayout>} />
