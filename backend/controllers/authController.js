@@ -20,6 +20,10 @@ const sendOtp = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone, role, otp, vehicleType, vehicleModel, vehicleNumber, carSubtype, seatingCapacity, idProof } = req.body;
+
+    // Block admin registration from the public signup endpoint
+    if (role === "admin") return res.status(403).json({ message: "Admin accounts cannot be created through public signup." });
+
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: "User already exists" });
 
@@ -53,6 +57,8 @@ const loginUser = async (req, res) => {
     if (!user) return res.status(401).json({ message: "No account found with this email" });
     if (!(await user.matchPassword(password))) return res.status(401).json({ message: "Incorrect password" });
     if (user.isActive === false) return res.status(403).json({ message: "Your account has been deactivated. Contact support." });
+    // Block admin login from the public login endpoint
+    if (user.role === "admin") return res.status(403).json({ message: "Admins must sign in at /admin/login." });
     res.json({ _id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, vehicle: user.vehicle, createdAt: user.createdAt, token: generateToken(user._id) });
   } catch (error) { res.status(500).json({ message: error.message }); }
 };
